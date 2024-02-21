@@ -1,0 +1,42 @@
+package org.example.pojo;
+
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true, exclude = "solutions")
+@ToString(exclude = "solutions")
+
+@SuperBuilder
+@Entity
+@Table(name = "students")
+public class Student extends Person implements Serializable {
+
+    @Builder.Default
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "students_courses",
+        joinColumns = {@JoinColumn(name = "student_id")},
+        inverseJoinColumns = {@JoinColumn(name = "course_id")})
+    private Set<Course> courses = new HashSet<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "student", fetch = FetchType.LAZY)
+    private Set<Solution> solutions = new HashSet<>();
+
+
+   /* @Builder(builderMethodName = "studentBuilder")
+    public Student(String personName, String personSurname, Set<Course> courses, Set<Solution> solutions) {
+        super(null, personName, personSurname);
+        this.courses = courses;
+        this.solutions = solutions;
+    }*/
+}
+
