@@ -94,4 +94,5 @@ public abstract class DaoImpl<T> implements DAO<T> {
     protected EntityManager getEm() {
         return em;
     }
+
 }
