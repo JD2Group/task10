@@ -1,6 +1,7 @@
 package org.example.dao.impl.entityImpl;
 
 import org.example.dao.ProfessorDao;
+import org.example.dao.impl.ProfessorDaoImpl;
 import org.example.pojo.Professor;
 import org.example.utils.HibernateUtil;
 import org.example.utils.MockUtils;
