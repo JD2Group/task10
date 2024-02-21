@@ -2,4 +2,4 @@
 /target/
 /src/main/resources/script.sql
 /src/main/java/org/example/Test.java
-/src/test/resources/META-INF/*.xml
+/src/test/resources/META-INF/
