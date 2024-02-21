@@ -13,7 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = "solutions")
-@ToString(exclude = "solutions")
+@ToString(callSuper = true, exclude = {"solutions", "courses"})
 
 @SuperBuilder
 @Entity
@@ -31,12 +31,11 @@ public class Student extends Person implements Serializable {
     @OneToMany(mappedBy = "student", fetch = FetchType.LAZY)
     private Set<Solution> solutions = new HashSet<>();
 
-
-   /* @Builder(builderMethodName = "studentBuilder")
-    public Student(String personName, String personSurname, Set<Course> courses, Set<Solution> solutions) {
-        super(null, personName, personSurname);
-        this.courses = courses;
-        this.solutions = solutions;
-    }*/
+    public void addCourse(Course course) {
+        this.courses.add(course);
+        if (course != null) {
+            course.getStudents().add(this);
+        }
+    }
 }
 

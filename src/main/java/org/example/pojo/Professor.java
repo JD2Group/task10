@@ -15,7 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = "courses")
-@ToString(exclude = "courses")
+@ToString(callSuper = true,exclude = "courses")
 
 @SuperBuilder
 @Entity
@@ -25,11 +25,4 @@ public class Professor extends Person implements Serializable {
     @Builder.Default
     @OneToMany(mappedBy = "professor", fetch = FetchType.LAZY)
     private Set<Course> courses = new HashSet<>();
-
-
-   /* @Builder(builderMethodName = "professorBuilder")
-    public Professor(String personName, String personSurname, Set<Course> courses) {
-        super(null, personName, personSurname);
-        this.courses = courses;
-    }*/
 }
