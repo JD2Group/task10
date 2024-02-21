@@ -38,7 +38,7 @@ public class Course implements Serializable {
     private LocalDateTime createdDate;
 
     @Builder.Default
-    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private Set<Task> tasks = new HashSet<>();
 
     @Builder.Default

@@ -1,19 +1,16 @@
 package org.example.dao;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
-public interface DAO<T, R> {
+public interface DAO<T> {
 
-    T create(T t);
+    void create(T t);
 
-    T read(R id) throws EntityNotFoundException;
+    T read(Object id);
 
-    T update(T t);
+    void update(T t);
 
-    void delete(R id) throws EntityNotFoundException;
+    void delete(Object id);
 
     List<T> readAll();
-
-    void closeManager();
 }

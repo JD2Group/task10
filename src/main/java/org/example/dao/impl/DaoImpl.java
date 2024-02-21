@@ -6,83 +6,93 @@ import org.example.utils.HibernateUtil;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.TypedQuery;
+import java.util.ArrayList;
 import java.util.List;
 
-public abstract class DaoImpl<T, R> implements DAO<T, R> {
+public abstract class DaoImpl<T> implements DAO<T> {
 
-    public static final String GET_ALL_ENTITIES = "SELECT s FROM %s s";
     private final Class<T> clazz;
-    private EntityManager em;
+    private final EntityManager em;
 
     public DaoImpl(Class<T> clazz) {
-
         this.clazz = clazz;
-        this.em = getEm();
+        em = HibernateUtil.getEntityManager();
     }
 
     @Override
-    public T create(T object) {
+    public void create(T t) {
 
-        if (object != null) {
+        try {
             em.getTransaction().begin();
-            em.persist(object);
+            em.persist(t);
             em.getTransaction().commit();
+        } catch (Exception e) {
+            System.out.println("Entity not saved!");
+            e.printStackTrace();
         }
-        return object;
+
     }
 
     @Override
-    public T read(R id) throws EntityNotFoundException {
+    public T read(Object id) {
+        T t = null;
+        try {
+            em.getTransaction().begin();
+            t = em.find(clazz, id);
 
-        return em.find(clazz, id);
-    }
-
-    @Override
-    public T update(T object) {
-
-        T t;
-        em.getTransaction().begin();
-        t = em.merge(object);
-        em.getTransaction().commit();
+            em.getTransaction().commit();
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
+        }
         return t;
     }
 
     @Override
-    public void delete(R id) throws EntityNotFoundException {
+    public void update(T t) {
 
-        if (id != null) {
+        try {
+            em.getTransaction().begin();
+            em.merge(t);
+            em.getTransaction().commit();
+        } catch (EntityNotFoundException e) {
+            System.out.println("Entity has not updated!");
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void delete(Object id) {
+
+        try {
             em.getTransaction().begin();
             Object rootEntity = em.getReference(clazz, id);
             em.remove(rootEntity);
             em.getTransaction().commit();
+        } catch (EntityNotFoundException e) {
+            em.getTransaction().rollback();
+            System.out.println("Entity not found!");
         }
     }
+
 
     @Override
     public List<T> readAll() {
 
-        TypedQuery<T> query = em.createQuery(getAllSqlString(), clazz);
-        return query.getResultList();
-    }
-
-    @Override
-    public void closeManager() {
-
-        if (em != null && em.isOpen()) {
-            em.close();
+        List<T> list = new ArrayList<>();
+        try {
+            em.getTransaction().begin();
+            TypedQuery<T> query = em.createQuery("", clazz);
+            list = query.getResultList();
+            em.getTransaction().commit();
+        } catch (EntityNotFoundException e) {
+            System.out.println("Entity not found!");
+            e.printStackTrace();
         }
+        return list;
     }
 
     protected EntityManager getEm() {
-
-        if (em == null || !em.isOpen()) {
-            em = HibernateUtil.getEntityManager();
-        }
         return em;
     }
 
-    protected String getAllSqlString() {
-
-        return String.format(GET_ALL_ENTITIES, clazz.getSimpleName());
-    }
 }
