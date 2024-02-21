@@ -1,12 +1,10 @@
 package org.example.pojo;
 
+
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,7 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = "courses")
-@ToString(callSuper = true, exclude = "courses")
+@ToString(callSuper = true,exclude = "courses")
 
 @SuperBuilder
 @Entity
