@@ -2,6 +2,7 @@ package org.example.dao.impl.entityImpl;
 
 
 import org.example.dao.SolutionDao;
+import org.example.dao.impl.SolutionDaoImpl;
 import org.example.pojo.Solution;
 import org.example.utils.HibernateUtil;
 import org.example.utils.MockUtils;

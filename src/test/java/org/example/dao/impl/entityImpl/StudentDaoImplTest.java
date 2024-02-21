@@ -1,6 +1,7 @@
 package org.example.dao.impl.entityImpl;
 
 import org.example.dao.StudentDao;
+import org.example.dao.impl.StudentDaoImpl;
 import org.example.pojo.Student;
 import org.example.utils.HibernateUtil;
 import org.example.utils.MockUtils;

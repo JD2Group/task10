@@ -2,8 +2,8 @@ package org.example.services;
 
 import org.example.dao.CourseDao;
 import org.example.dao.ProfessorDao;
-import org.example.dao.impl.entityImpl.CourseDaoImpl;
-import org.example.dao.impl.entityImpl.ProfessorDaoImpl;
+import org.example.dao.impl.CourseDaoImpl;
+import org.example.dao.impl.ProfessorDaoImpl;
 import org.example.pojo.Course;
 import org.example.pojo.Professor;
 import org.example.utils.HibernateUtil;
