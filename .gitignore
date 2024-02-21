@@ -1,5 +1,3 @@
 /.idea/
 /target/
-/src/main/resources/script.sql
-/src/main/java/org/example/Test.java
-/src/test/resources/META-INF/f.txt
+/src/main/resources/META-INF/persistence.xml
