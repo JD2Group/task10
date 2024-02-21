@@ -13,9 +13,6 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @ToString
 @SuperBuilder
-/*@Entity*/
-/*@Inheritance(strategy = InheritanceType.JOINED)*/
-/*@Table*/
 @MappedSuperclass
 public class Person implements Serializable {
 

@@ -1,17 +1,16 @@
 package org.example.dao;
 
-import java.sql.SQLException;
 import java.util.List;
 
-public interface DAO<T> {
+public interface DAO<T,R> {
 
-    void create(T t) throws SQLException;
+    T create(T t);
 
-    T read(Object id) throws SQLException;
+    T read(R id);
 
-    void update(T t) throws SQLException;
+    void update(T t);
 
-    void delete(Object id) throws SQLException;
+    void delete(R id);
 
-    List<T> readAll() throws SQLException;
+    List<T> readAll();
 }
