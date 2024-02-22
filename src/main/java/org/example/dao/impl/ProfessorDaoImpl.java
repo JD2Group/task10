@@ -53,4 +53,14 @@ public class ProfessorDaoImpl extends DaoImpl<Professor, Long> implements Profes
         TypedQuery<Professor> query = getEm().createQuery(sqlQuery, Professor.class);
         return query.getSingleResult();
     }
+
+    @Override
+    public Professor getByEmail(String oldEmail) {
+        return null;
+    }
+
+    @Override
+    public void deleteByEmail(String email) {
+
+    }
 }
