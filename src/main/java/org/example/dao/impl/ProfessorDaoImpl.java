@@ -2,36 +2,31 @@ package org.example.dao.impl;
 
 import org.example.dao.ProfessorDao;
 import org.example.pojo.Professor;
-import org.example.pojo.Student;
-import org.example.utils.HibernateUtil;
+import org.hibernate.PropertyValueException;
+import org.hibernate.exception.ConstraintViolationException;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 
-public class ProfessorDaoImpl extends DaoImpl<Professor,Long> implements ProfessorDao {
+public class ProfessorDaoImpl extends DaoImpl<Professor, Long> implements ProfessorDao {
 
-    private static final EntityManager em = HibernateUtil.getEntityManager();
 
     public ProfessorDaoImpl() {
 
-        super(Professor.class, em);
+        super(Professor.class);
     }
 
     @Override
-    public Professor create(Professor professor) {
+    public Professor create(Professor professor) throws ConstraintViolationException, PropertyValueException {
 
-        if (super.readAll()
-                .stream()
-                .allMatch(prof -> (!prof.getName()
-                                        .equalsIgnoreCase(professor.getName()))
-                                      || (!prof.getSurname()
-                                               .equalsIgnoreCase(professor.getSurname())))) {
-            em.getTransaction().begin();
-            em.persist(professor);
-            em.getTransaction().commit();
-        } else {
+        /*if (super.readAll().stream()
+                .allMatch(prof -> (
+                    !prof.getEmail().equalsIgnoreCase(professor.getEmail())))) {*/
+       super.create(professor);
+             /* } else {
             return null;
-        }
+        }*/
         return professor;
     }
 
@@ -40,17 +35,27 @@ public class ProfessorDaoImpl extends DaoImpl<Professor,Long> implements Profess
 
         Professor professor = super.read(id);
         if (professor != null) {
-            em.refresh(professor);
-            em.getTransaction().begin();
+            getEm().refresh(professor);
+            getEm().getTransaction().begin();
             professor.getCourses().stream()
                 .peek(course -> course.setProfessor(null))
-                .forEach(em::merge);
-            em.flush();
-            em.remove(professor);
-            em.getTransaction().commit();
+                .forEach(getEm()::merge);
+            getEm().flush();
+            getEm().remove(professor);
+            getEm().getTransaction().commit();
         } else {
             System.out.println(String.format("%s with id=%s not found!", Professor.class.getSimpleName(), id.toString()));
-            throw new EntityNotFoundException() ;
+            throw new EntityNotFoundException();
         }
+    }
+
+    @Override
+    public Professor read(String email) throws NoResultException {
+
+        Professor professor;
+        String sqlQuery = String.format("SELECT s FROM Professor s WHERE s.email='%s'", email);
+        TypedQuery<Professor> query = getEm().createQuery(sqlQuery, Professor.class);
+        professor = query.getSingleResult();
+        return professor;
     }
 }

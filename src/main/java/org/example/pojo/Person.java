@@ -25,4 +25,7 @@ public class Person implements Serializable {
 
     @Column(nullable = false)
     private String surname;
+
+    @Column(nullable = false,unique = true)
+    private String email;
 }
