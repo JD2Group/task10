@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet author="Timonov_Timon" id="01">
+        <createTable tableName="tasks">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" unique="true"/>
+            </column>
+            <column name="createdDate" type="datetime(6)" />
+            <column name="description" type="longtext"/>
+            <column name="title" type="varchar(255)"/>
+            <column name="course_id" type="bigint">
+                <constraints foreignKeyName="FKopldg47bgaarlampi2f6wees3"
+                             referencedTableName="courses"
+                             referencedColumnNames="id"
+                             nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="Timonov_Timon" id="02">
+        <insert tableName="tasks">
+            <column name="id" value="1"/>
+            <column name="description" value="The task has been deleted"/>
+            <column name="title" value="Canceled task"/>
+        </insert>
+        <rollback>
+            <delete tableName="tasks">
+                <whereParams>
+                    <param name="description" value="The task has been deleted"/>
+                    <param name="title" value="Canceled task"/>
+                </whereParams>
+            </delete>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
+
+
+        <!--create table tasks
+        (
+            id          bigint auto_increment
+                primary key,
+            createdDate datetime(6)  null,
+            description longtext     null,
+            title       varchar(255) null,
+            course_id   bigint       null,
+            constraint FKopldg47bgaarlampi2f6wees3
+                foreign key (course_id) references courses (id)
+        );
+
+        insert into tasks ( description, title)
+         value ('The task has been deleted','Canceled task');-->
