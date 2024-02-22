@@ -58,4 +58,14 @@ public class ProfessorDaoImpl extends DaoImpl<Professor, Long> implements Profes
         professor = query.getSingleResult();
         return professor;
     }
+
+    @Override
+    public Professor getByEmail(String oldEmail) {
+        return null;
+    }
+
+    @Override
+    public void deleteByEmail(String email) {
+
+    }
 }

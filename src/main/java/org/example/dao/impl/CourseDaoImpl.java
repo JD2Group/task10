@@ -4,6 +4,7 @@ import org.example.dao.CourseDao;
 import org.example.pojo.Course;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 public class CourseDaoImpl extends DaoImpl<Course, Long> implements CourseDao {
 
@@ -36,5 +37,15 @@ public class CourseDaoImpl extends DaoImpl<Course, Long> implements CourseDao {
                 throw new EntityNotFoundException();
             }
         }
+    }
+
+    @Override
+    public List<Course> readAllByProfId(Long id) {
+        return null;
+    }
+
+    @Override
+    public List<Course> getCourseByTitleAndEmail(String title, String profEmail) {
+        return null;
     }
 }
