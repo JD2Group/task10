@@ -10,20 +10,25 @@ import java.util.List;
 public interface StudentServ {
 
 
+    List<Course> getAllCourses();
 
-   List<Course> getAllCourses();
-   List<Course> getMyCourses(Student student);
-
-   void checkInCourse(Course course, Student student);
-   void checkOutCourse(Course course, Student student);
-
-   List<Task> getTasksOfCourse(Course course);
-   List<Task> getAllMyTasks(Student student);
-
-   Solution createSolution(Task task, Student student);
-   Solution getSolution(Task task, Student student);
-   Solution updateSolution(Task task, Student student,boolean readyForReview,String response);
+    List<Course> getMyCourses(Student student);
 
 
+    void checkInCourse(Course course, Student student);
 
+    void checkOutCourse(Course course, Student student);
+
+
+    List<Task> getAllMyTasks(Course course, Student student);
+
+    List<Task> getAllMyTasks(Student student);
+
+
+    Solution createSolution(Task task, Student student);
+
+    Solution getSolution(Task task, Student student);
+
+
+    Solution solveTask(Solution solution, boolean readyForReview, String response);
 }

@@ -7,7 +7,8 @@ create table professors
     id      bigint auto_increment
         primary key,
     name    varchar(255) not null,
-    surname varchar(255) not null
+    surname varchar(255) not null,
+    email varchar(255) not null unique
 );
 
 create table courses
@@ -21,12 +22,16 @@ create table courses
         foreign key (professor_id) references professors (id)
 );
 
+insert into courses (id, title)
+    value (1,'This course has been deleted.');
+
 create table students
 (
     id      bigint auto_increment
         primary key,
     name    varchar(255) not null,
-    surname varchar(255) not null
+    surname varchar(255) not null,
+    email varchar(255) not null unique
 );
 
 create table students_courses
@@ -52,6 +57,9 @@ create table tasks
         foreign key (course_id) references courses (id)
 );
 
+insert into tasks ( description, title)
+    value ('The task has been deleted','Canceled task');
+
 create table solutions
 (
     id             bigint auto_increment
@@ -70,6 +78,5 @@ create table solutions
         foreign key (task_id) references tasks (id)
 );
 
-insert into tasks ( description, title)
- value ('The task has been deleted','Canceled task');
+
 

@@ -2,38 +2,39 @@ package org.example.dao.impl;
 
 import org.example.dao.CourseDao;
 import org.example.pojo.Course;
-import org.example.utils.HibernateUtil;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 
 public class CourseDaoImpl extends DaoImpl<Course, Long> implements CourseDao {
 
-    private static final EntityManager em = HibernateUtil.getEntityManager();
+    public static final long DELETED_COURSE_ID = 1L;
 
     public CourseDaoImpl() {
-        super(Course.class, em);
+        super(Course.class);
     }
 
     @Override
     public void delete(Long id) {
 
-        Course course = super.read(id);
-        if (course != null) {
-            em.getTransaction().begin();
-            em.refresh(course);
-            course.getStudents().stream()
-                .peek(student -> student.getCourses().remove(course))
-                .forEach(em::merge);
-            course.getTasks().stream()
-                .peek(task -> task.setCourse(null))
-                .forEach(em::merge);
-            em.flush();
-            em.remove(course);
-            em.getTransaction().commit();
-        } else {
-            System.out.println(String.format("%s with id=%s not found!", Course.class.getSimpleName(), id.toString()));
-            throw new EntityNotFoundException() ;
+        if (id != DELETED_COURSE_ID) {
+            Course course = super.read(id);
+            Course deleted = super.read(DELETED_COURSE_ID);
+            if (course != null) {
+                getEm().getTransaction().begin();
+                getEm().refresh(course);
+                course.getStudents().stream()
+                    .peek(student -> student.getCourses().remove(course))
+                    .forEach(getEm()::merge);
+                course.getTasks().stream()
+                    .peek(task -> task.setCourse(deleted))
+                    .forEach(getEm()::merge);
+                getEm().flush();
+                getEm().remove(course);
+                getEm().getTransaction().commit();
+            } else {
+                System.out.println(String.format("%s with id=%s not found!", Course.class.getSimpleName(), id.toString()));
+                throw new EntityNotFoundException();
+            }
         }
     }
 }
