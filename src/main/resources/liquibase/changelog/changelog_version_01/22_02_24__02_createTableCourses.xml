@@ -7,28 +7,62 @@
     <changeSet author="Timonov_Timon" id="01">
         <createTable tableName="courses">
             <column name="id" type="bigint" autoIncrement="true">
-                <constraints nullable="false" primaryKey="true" unique="true"/>
+                <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="createdDate" type="datetime(6)"/>
             <column name="title" type="varchar(255)"/>
             <column name="professor_id" type="bigint">
-                <constraints foreignKeyName="FKsj4okul9jc8m3p4tsnuobqjpb"
-                             referencedTableName="professors"
-                             referencedColumnNames="id"
-                             nullable="true"/>
+                <constraints nullable="true"/>
+                <!-- <constraints foreignKeyName="FKsj4okul9jc8m3p4tsnuobqjpb"
+                              referencedTableName="professors"
+                              referencedColumnNames="id"
+                              nullable="true"/>-->
             </column>
         </createTable>
+        <rollback>
+            <dropTable tableName="courses"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="Timonov_Timon" id="02">
+        <addForeignKeyConstraint
+                baseTableName="courses"
+                baseColumnNames="professor_id"
+                constraintName="FKsj4okul9jc8m3p4tsnuobqjpb"
+                referencedTableName="professors"
+                referencedColumnNames="id"/>
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="FKsj4okul9jc8m3p4tsnuobqjpb"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="Timonov_Timon" id="03">
+        <insert tableName="courses">
+            <column name="id" value="1"/>
+            <column name="title" value="This course has been deleted."/>
+        </insert>
+        <rollback>
+            <delete tableName="courses">
+                <whereParams>
+                    <param name="id" value="1"/>
+                    <param name="title" value="This course has been deleted."/>
+                </whereParams>
+            </delete>
+        </rollback>
     </changeSet>
 </databaseChangeLog>
 
 
         <!--create table courses
         (
-            id           bigint auto_increment
-                primary key,
-            createdDate  datetime(6)  null,
-            title        varchar(255) null,
-            professor_id bigint       null,
-            constraint FKsj4okul9jc8m3p4tsnuobqjpb
-                foreign key (professor_id) references professors (id)
-        );-->
+        id           bigint auto_increment
+        primary key,
+        createdDate  datetime(6)  null,
+        title        varchar(255) null,
+        professor_id bigint       null,
+        constraint FKsj4okul9jc8m3p4tsnuobqjpb
+        foreign key (professor_id) references professors (id)
+        );
+
+        insert into courses (id, title)
+        value (1,'This course has been deleted.');-->
