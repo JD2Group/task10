@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet author="Timonov_Timon" id="01">
+        <createTable tableName="courses">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" unique="true"/>
+            </column>
+            <column name="createdDate" type="datetime(6)"/>
+            <column name="title" type="varchar(255)"/>
+            <column name="professor_id" type="bigint">
+                <constraints foreignKeyName="FKsj4okul9jc8m3p4tsnuobqjpb"
+                             referencedTableName="professors"
+                             referencedColumnNames="id"
+                             nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
+
+
+        <!--create table courses
+        (
+            id           bigint auto_increment
+                primary key,
+            createdDate  datetime(6)  null,
+            title        varchar(255) null,
+            professor_id bigint       null,
+            constraint FKsj4okul9jc8m3p4tsnuobqjpb
+                foreign key (professor_id) references professors (id)
+        );-->
