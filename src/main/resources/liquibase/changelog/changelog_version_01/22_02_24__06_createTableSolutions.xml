@@ -7,54 +7,27 @@
     <changeSet author="Timonov_Timon" id="01">
         <createTable tableName="solutions">
             <column name="id" type="bigint" autoIncrement="true">
-                <constraints nullable="false" primaryKey="true"/>
+                <constraints nullable="false" primaryKey="true" unique="true"/>
             </column>
-            <column name="createdDate" type="datetime(6)"/>
+            <column name="createdDate" type="datetime(6)" />
             <column name="mark" type="int"/>
             <column name="readyForReview" type="bit"/>
             <column name="response" type="longtext"/>
             <column name="review" type="longtext"/>
             <column name="updatedDate" type="datetime(6)"/>
             <column name="student_id" type="bigint">
-                <!--<constraints foreignKeyName="FK1pcfy9sr41qrjfjnryxw7ld1o"
+                <constraints foreignKeyName="FK1pcfy9sr41qrjfjnryxw7ld1o"
                              referencedTableName="students"
                              referencedColumnNames="id"
-                             nullable="true"/>-->
+                             nullable="true"/>
             </column>
             <column name="task_id" type="bigint">
-                <!--<constraints foreignKeyName="FKbqabgk1lnu9xg0rbmno60q2tw"
+                <constraints foreignKeyName="FKbqabgk1lnu9xg0rbmno60q2tw"
                              referencedTableName="tasks"
                              referencedColumnNames="id"
-                             nullable="true"/>-->
+                             nullable="true"/>
             </column>
         </createTable>
-        <rollback>
-            <dropTable tableName="solutions"/>
-        </rollback>
-    </changeSet>
-
-    <changeSet author="Timonov_Timon" id="02">
-        <addForeignKeyConstraint
-                baseTableName="solutions"
-                baseColumnNames="student_id"
-                constraintName="FK1pcfy9sr41qrjfjnryxw7ld1o"
-                referencedTableName="students"
-                referencedColumnNames="id"/>
-        <rollback>
-            <dropForeignKeyConstraint baseTableName="FK1pcfy9sr41qrjfjnryxw7ld1o"/>
-        </rollback>
-    </changeSet>
-
-    <changeSet author="Timonov_Timon" id="03">
-        <addForeignKeyConstraint
-                baseTableName="solutions"
-                baseColumnNames="task_id"
-                constraintName="FKbqabgk1lnu9xg0rbmno60q2tw"
-                referencedTableName="tasks"
-                referencedColumnNames="id"/>
-        <rollback>
-            <dropForeignKeyConstraint baseTableName="FKbqabgk1lnu9xg0rbmno60q2tw"/>
-        </rollback>
     </changeSet>
 </databaseChangeLog>
 

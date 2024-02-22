@@ -7,7 +7,7 @@
     <changeSet author="Timonov_Timon" id="01">
         <createTable tableName="students">
             <column name="id" type="bigint" autoIncrement="true">
-                <constraints nullable="false" primaryKey="true"/>
+                <constraints nullable="false" primaryKey="true" unique="true"/>
             </column>
             <column name="name" type="varchar(255)">
                 <constraints nullable="false"/>
@@ -15,42 +15,15 @@
             <column name="surname" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="email" type="varchar(255)">
-                <constraints nullable="false" unique="true"/>
-            </column>
         </createTable>
-        <rollback>
-            <dropTable tableName="students"/>
-        </rollback>
-    </changeSet>
-
-    <changeSet author="Timonov_Timon" id="02">
-        <insert tableName="students">
-            <column name="id" value="1"/>
-            <column name="name" value="Deleted"/>
-            <column name="surname" value="Deleted"/>
-            <column name="email" value="Deleted"/>
-        </insert>
-        <rollback>
-            <delete tableName="students">
-                <whereParams>
-                    <param name="id" value="1"/>
-                    <param name="email" value="Deleted"/>
-                </whereParams>
-            </delete>
-        </rollback>
     </changeSet>
 </databaseChangeLog>
 
 
-        <!--  create table students
-          (
-          id      bigint auto_increment
-          primary key,
-          name    varchar(255) not null,
-          surname varchar(255) not null,
-          email varchar(255) not null unique
-
-          insert into students (id, name, surname, email)
-          value (1,'Deleted','Deleted','Deleted');
-          );-->
+        <!--create table students
+        (
+            id      bigint auto_increment
+                primary key,
+            name    varchar(255) not null,
+            surname varchar(255) not null
+        );-->

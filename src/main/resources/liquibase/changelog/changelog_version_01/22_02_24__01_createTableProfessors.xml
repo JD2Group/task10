@@ -7,7 +7,7 @@
     <changeSet author="Timonov_Timon" id="01">
         <createTable tableName="professors">
             <column name="id" type="bigint" autoIncrement="true">
-                <constraints nullable="false" primaryKey="true"/>
+                <constraints nullable="false" primaryKey="true" unique="true"/>
             </column>
             <column name="name" type="varchar(255)">
                 <constraints nullable="false"/>
@@ -15,13 +15,7 @@
             <column name="surname" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="email" type="varchar(255)">
-                <constraints nullable="false" unique="true"/>
-            </column>
         </createTable>
-        <rollback>
-            <dropTable tableName="professors"/>
-        </rollback>
     </changeSet>
 </databaseChangeLog>
 
@@ -31,6 +25,5 @@
             id      bigint auto_increment
                 primary key,
             name    varchar(255) not null,
-            surname varchar(255) not null,
-            email varchar(255) not null unique
+            surname varchar(255) not null
         );-->
