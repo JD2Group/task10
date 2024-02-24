@@ -9,12 +9,17 @@ import java.util.List;
 public interface AdministratorServ {
 
 
-    <T> Long createAccount(String name, String surname, Class<T> clazz);//return id of new account
+    Professor createProfessorAccount(String name, String surname, String email);
 
-    <T> void deleteAccount(Long id, Class<T> clazz);
+    Student createStudentAccount(String name, String surname, String email);
 
-    <T> void deleteAccount(String name, String surname, Class<T> clazz);
+    Professor getProfessorByEmail(String email);
 
+    Student getStudentByEmail(String email);
+
+    void deleteAccount(Student student);
+
+    void deleteAccount(Professor professor);
 
     List<Student> getAllStudents();
 

@@ -1,18 +1,21 @@
 package org.example.servise;
 
+import org.example.excepion.Exceptions;
 import org.example.pojo.Course;
 import org.example.pojo.Solution;
 import org.example.pojo.Student;
 import org.example.pojo.Task;
 
+import javax.persistence.NoResultException;
 import java.util.List;
 
 public interface StudentServ {
 
+    Student getByEmail(String Email);
 
     List<Course> getAllCourses();
 
-    List<Course> getMyCourses(Student student);
+    List<Course> getMyCourses(Student student) throws NoResultException;
 
 
     void checkInCourse(Course course, Student student);
@@ -20,15 +23,12 @@ public interface StudentServ {
     void checkOutCourse(Course course, Student student);
 
 
-    List<Task> getAllMyTasks(Course course, Student student);
+    List<Task> getTasksFromCourse(Course course) throws NoResultException;
 
-    List<Task> getAllMyTasks(Student student);
-
-
-    Solution createSolution(Task task, Student student);
+    List<Task> getAllMyTasks(Student student) throws NoResultException;
 
     Solution getSolution(Task task, Student student);
 
 
-    Solution solveTask(Solution solution, boolean readyForReview, String response);
+    void solveTask(Solution solution, boolean readyForReview, String response) throws Exceptions.SolutionIsResolvedException;
 }

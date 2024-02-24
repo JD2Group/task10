@@ -1,6 +1,5 @@
 package org.example.pojo;
 
-
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Type;
@@ -34,11 +33,11 @@ public class Solution implements Serializable {
     private Student student;
 
     @Column
-    @Type(type="text")
+    @Type(type = "text")
     private String response;
 
     @Column
-    @Type(type="text")
+    @Type(type = "text")
     private String review;
 
     @Column
