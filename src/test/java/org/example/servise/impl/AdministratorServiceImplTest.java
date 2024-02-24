@@ -114,48 +114,64 @@ class AdministratorServiceImplTest {
 
     @Test
     void getAllStudents() {
-        EntityManager manager = HibernateUtil.getEntityManager();
-        manager.getTransaction().begin();
-        Query numberOfStudentsQuery = manager.createNativeQuery(GET_AMOUNT_OF_STUDENTS_QUERY);
-        BigInteger expected = (BigInteger) numberOfStudentsQuery.getSingleResult();
-        manager.close();
+        int expected = getNumberOfObjects(GET_NUMBER_OF_STUDENTS_QUERY);
         List<Student> actual = service.getAllStudents();
 
-        assertEquals(expected.intValue() - 1, actual.size());
+        assertEquals(expected - 1, actual.size());
     }
 
     @Test
     void getAllStudentsByCourse() {
         Course course = service.getAllCourses().get(1);
-        EntityManager manager = HibernateUtil.getEntityManager();
-        manager.getTransaction().begin();
-        Query numberOfStudentsQuery = manager.createNativeQuery(GET_AMOUNT_OF_STUDENTS_BY_COURSE_QUERY);
-        numberOfStudentsQuery.setParameter(1, course.getId());
-        BigInteger expected = (BigInteger) numberOfStudentsQuery.getSingleResult();
-        manager.close();
+        int expected = getNumberOfObjects(GET_NUMBER_OF_STUDENTS_BY_COURSE_QUERY, course.getId());
         List<Student> actual = service.getAllStudents(course);
 
-        assertEquals(expected.intValue(), actual.size());
+        assertEquals(expected, actual.size());
     }
 
     @Test
     void getAllProfessors() {
+        int expected = getNumberOfObjects(GET_NUMBER_OF_PROFESSORS_QUERY);
+        List<Professor> actual = service.getAllProfessors();
+
+        assertEquals(expected, actual.size());
     }
 
     @Test
     void getAllCourses() {
+        int expected = getNumberOfObjects(GET_NUMBER_OF_COURSES_QUERY);
+        List<Course> actual = service.getAllCourses();
+
+        assertEquals(expected, actual.size());
     }
 
     @Test
-    void testGetAllCourses() {
+    void getAllCoursesByProfessor() {
+        int expected = getNumberOfObjects(GET_NUMBER_OF_COURSES_QUERY, PROFESSOR_ID);
+        List<Course> actual = service.getAllCourses();
+
+        assertEquals(expected, actual.size());
     }
 
     @Test
     void createCourse() {
+        Professor professor = service.getAllProfessors().get(0);
+        String courseTitle = COURSE_TITLE + RANDOM.nextInt(MAX_RANDOM_NUMBER);
+        service.createCourse(courseTitle, professor);
+        Course actual = service.getCourseByTitleAndProfEmail(courseTitle, professor.getEmail()).get(0);
+
+        assertEquals(courseTitle, actual.getTitle());
+        assertEquals(professor, actual.getProfessor());
     }
 
     @Test
     void updateCourse() {
+        List<Course> courses = service.getAllCourses();
+        Course course = courses.get(RANDOM.nextInt(courses.size()));
+        service.updateCourse(course, UPDATE);
+        String actual = service.getCourseByTitleAndProfEmail(UPDATE, course.getProfessor().getEmail()).get(0).getTitle();
+
+        assertEquals(UPDATE, actual);
     }
 
     @Test
@@ -168,5 +184,22 @@ class AdministratorServiceImplTest {
 
     @Test
     void getCourseByTitleAndProfEmail() {
+    }
+
+    private int getNumberOfObjects(String query) {
+        return getNumberOfObjects(query, null);
+    }
+
+    private int getNumberOfObjects(String query, Long id) {
+        EntityManager manager = HibernateUtil.getEntityManager();
+        manager.getTransaction().begin();
+        Query numberOfStudentsQuery = manager.createNativeQuery(query);
+        if (id != null) {
+            numberOfStudentsQuery.setParameter(1, id);
+        }
+        BigInteger result = (BigInteger) numberOfStudentsQuery.getSingleResult();
+        manager.close();
+
+        return result.intValue();
     }
 }
