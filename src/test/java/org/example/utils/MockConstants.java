@@ -24,6 +24,10 @@ public abstract class MockConstants {
     public static final String DELETE_ALL_SOLUTIONS = "delete from solutions";
     public static final String DELETE_ALL_STUDENTS = "delete from students";
     public static final String DELETE_ALL_TASK = "delete from tasks";
-    public static final String GET_AMOUNT_OF_STUDENTS_QUERY = "select count(*) from students";
-    public static final String GET_AMOUNT_OF_STUDENTS_BY_COURSE_QUERY = "select count(*) from students_courses where course_id = ?1";
+    public static final String GET_NUMBER_OF_STUDENTS_QUERY = "select count(*) from students";
+    public static final String GET_NUMBER_OF_STUDENTS_BY_COURSE_QUERY = "select count(*) from students_courses where course_id = ?1";
+    public static final String GET_NUMBER_OF_PROFESSORS_QUERY = "select count(*) from professors";
+    public static final String GET_NUMBER_OF_COURSES_QUERY = "select count(*) from courses";
+    public static final String GET_NUMBER_OF_COURSES_BY_PROFESSOR_QUERY = "select count(*) from courses where professor_id = ?1";
+    public static final Long PROFESSOR_ID = 1L;
 }
