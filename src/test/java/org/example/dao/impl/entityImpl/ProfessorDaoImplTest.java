@@ -8,12 +8,12 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
 
 import static org.example.utils.MockConstants.DELETE_ALL_PROFESSORS;
 import static org.example.utils.MockConstants.UPDATE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ProfessorDaoImplTest {
     private final ProfessorDao professorDao = new ProfessorDaoImpl();
@@ -56,9 +56,9 @@ class ProfessorDaoImplTest {
         professorDao.create(professor);
         Long id = professor.getId();
         professorDao.delete(id);
-        professorDao.delete(0L);
         Professor actual = professorDao.read(id);
 
         assertNull(actual);
+        assertThrows(EntityNotFoundException.class, () -> professorDao.delete(0L));
     }
 }

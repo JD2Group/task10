@@ -8,6 +8,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
 
 import static org.example.utils.MockConstants.*;
@@ -55,9 +56,9 @@ class StudentDaoImplTest {
         studentDao.create(student);
         Long id = student.getId();
         studentDao.delete(id);
-        studentDao.delete(0L);
         Student actual = studentDao.read(id);
 
         assertNull(actual);
+        assertThrows(EntityNotFoundException.class, () ->studentDao.delete(0L));
     }
 }
