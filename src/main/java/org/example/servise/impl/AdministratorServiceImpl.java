@@ -118,4 +118,10 @@ public class AdministratorServiceImpl extends ParrentService implements Administ
 
         getCourseDao().delete(course.getId());
     }
+
+    @Override
+    public  List<Course> getCourseByTitleAndProfEmail(String title, String email) throws NoResultException {
+
+        return getCourseDao().getCourseByTitleAndEmail(title,email);
+    }
 }
