@@ -17,41 +17,48 @@ public class StudentDaoImpl extends DaoImpl<Student, Long> implements StudentDao
     }
 
     @Override
-    public Student create(Student student) throws ConstraintViolationException, PropertyValueException {
+    public Student create(Student student) throws ConstraintViolationException/*not unique email*/, PropertyValueException /*empty fields*/ {
 
-       /* if (super.readAll().stream()
-                .allMatch(stud -> (
-                    !stud.getEmail().equalsIgnoreCase(student.getEmail())))) {*/
         super.create(student);
-       /* } else {
-            return null;
-        }*/
         return student;
     }
 
     @Override
     public void delete(Long id) throws EntityNotFoundException {
 
-        Student student = super.read(id);
-        if (student != null) {
-            getEm().getTransaction().begin();
-            getEm().refresh(student);
-            student.getSolutions().forEach(getEm()::remove);
-            getEm().remove(student);
-            getEm().getTransaction().commit();
-        } else {
-            System.out.println(String.format("%s with id=%s not found!", Student.class.getSimpleName(), id.toString()));
-            throw new EntityNotFoundException();
+        if (!id.equals(StudentDao.DELETED_STUDENT_ID)) {
+            Student student = super.read(id);
+            Student deleted = super.read(StudentDao.DELETED_STUDENT_ID);
+            if (student != null) {
+                getEm().getTransaction().begin();
+                getEm().refresh(student);
+                student.getSolutions().stream()
+                    .peek(solution -> solution.setStudent(deleted))
+                    .forEach(getEm()::merge);
+                getEm().remove(student);
+                getEm().getTransaction().commit();
+            } else {
+                throw new EntityNotFoundException();
+            }
         }
     }
 
     @Override
-    public Student read(String email) throws NoResultException {
+    public Student getByEmail(String email) throws NoResultException {
 
         Student student;
-        String sqlQuery = String.format("SELECT s FROM Student s WHERE s.email='%s'", email);
+        String sqlQuery = String.format("SELECT s FROM Student s WHERE s.email='%s' AND s.id NOT LIKE '%d'",
+            email, StudentDao.DELETED_STUDENT_ID);
+        getEm().getTransaction().begin();
         TypedQuery<Student> query = getEm().createQuery(sqlQuery, Student.class);
         student = query.getSingleResult();
+        getEm().getTransaction().commit();
         return student;
+    }
+
+    @Override
+    protected String getAllSqlString() {
+
+        return String.format("SELECT s FROM Student s WHERE s.id NOT LIKE '%d'", StudentDao.DELETED_STUDENT_ID);
     }
 }
