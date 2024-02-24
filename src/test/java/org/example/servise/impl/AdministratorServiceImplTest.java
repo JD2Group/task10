@@ -165,7 +165,7 @@ class AdministratorServiceImplTest {
     }
 
     @Test
-    void updateCourse() {
+    void updateCourseTitle() {
         List<Course> courses = service.getAllCourses();
         Course course = courses.get(RANDOM.nextInt(courses.size()));
         service.updateCourse(course, UPDATE);
@@ -175,15 +175,24 @@ class AdministratorServiceImplTest {
     }
 
     @Test
-    void testUpdateCourse() {
+    void updateCourseProfessor() {
+        List<Course> courses = service.getAllCourses();
+        Course course = courses.get(RANDOM.nextInt(courses.size()));
+        Professor expected = service.createProfessorAccount(PROFESSOR_NAME, PROFESSOR_SURNAME, PROFESSOR_EMAIL);
+        service.updateCourse(course, expected);
+        Professor actual = service.getCourseByTitleAndProfEmail(UPDATE, course.getProfessor().getEmail()).get(0).getProfessor();
+
+        assertEquals(expected, actual);
     }
 
     @Test
     void deleteCourse() {
-    }
+        List<Course> courses = service.getAllCourses();
+        Course course = courses.get(RANDOM.nextInt(courses.size()));
+        service.deleteCourse(course);
+        Course actual = service.getCourseByTitleAndProfEmail(course.getTitle(), course.getProfessor().getEmail()).get(0);
 
-    @Test
-    void getCourseByTitleAndProfEmail() {
+        assertNull(actual);
     }
 
     private int getNumberOfObjects(String query) {
