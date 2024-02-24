@@ -2,63 +2,63 @@ package org.example.dao.impl;
 
 import org.example.dao.StudentDao;
 import org.example.pojo.Student;
-import org.example.utils.HibernateUtil;
+import org.hibernate.PropertyValueException;
+import org.hibernate.exception.ConstraintViolationException;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
-public class StudentDaoImpl extends DaoImpl<Student,Long> implements StudentDao {
-
-    private static final EntityManager em = HibernateUtil.getEntityManager();
+public class StudentDaoImpl extends DaoImpl<Student, Long> implements StudentDao {
 
     public StudentDaoImpl() {
 
-        super(Student.class, em);
-
+        super(Student.class);
     }
 
     @Override
-    public Student create(Student student) {
+    public Student create(Student student) throws ConstraintViolationException/*not unique email*/, PropertyValueException /*empty fields*/ {
 
-        if (super.readAll()
-                .stream()
-                .allMatch(stud -> (!stud.getName()
-                                        .equalsIgnoreCase(student.getName()))
-                                      || (!stud.getSurname()
-                                               .equalsIgnoreCase(student.getSurname())))) {
-            em.getTransaction().begin();
-            em.persist(student);
-            em.getTransaction().commit();
-        } else {
-            return null;
-        }
+        super.create(student);
         return student;
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Long id) throws EntityNotFoundException {
 
-        Student student = super.read(id);
-        if (student != null) {
-            em.getTransaction().begin();
-            em.refresh(student);
-            student.getSolutions().forEach(em::remove);
-            em.remove(student);
-            em.getTransaction().commit();
-        } else {
-            System.out.println(String.format("%s with id=%s not found!", Student.class.getSimpleName(), id.toString()));
-            throw new EntityNotFoundException() ;
+        if (!id.equals(StudentDao.DELETED_STUDENT_ID)) {
+            Student student = super.read(id);
+            Student deleted = super.read(StudentDao.DELETED_STUDENT_ID);
+            if (student != null) {
+                getEm().getTransaction().begin();
+                getEm().refresh(student);
+                student.getSolutions().stream()
+                    .peek(solution -> solution.setStudent(deleted))
+                    .forEach(getEm()::merge);
+                getEm().remove(student);
+                getEm().getTransaction().commit();
+            } else {
+                throw new EntityNotFoundException();
+            }
         }
     }
 
-
-    public Student read(String name, String surname) {
+    @Override
+    public Student getByEmail(String email) throws NoResultException {
 
         Student student;
-        String sqlQuery = String.format("SELECT s FROM students s WHERE s.name='%s' AND s.surname='%s'", name, surname);
-        TypedQuery<Student> query = em.createQuery(sqlQuery, Student.class);
+        String sqlQuery = String.format("SELECT s FROM Student s WHERE s.email='%s' AND s.id NOT LIKE '%d'",
+            email, StudentDao.DELETED_STUDENT_ID);
+        getEm().getTransaction().begin();
+        TypedQuery<Student> query = getEm().createQuery(sqlQuery, Student.class);
         student = query.getSingleResult();
+        getEm().getTransaction().commit();
         return student;
+    }
+
+    @Override
+    protected String getAllSqlString() {
+
+        return String.format("SELECT s FROM Student s WHERE s.id NOT LIKE '%d'", StudentDao.DELETED_STUDENT_ID);
     }
 }

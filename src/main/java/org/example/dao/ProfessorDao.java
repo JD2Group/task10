@@ -2,5 +2,9 @@ package org.example.dao;
 
 import org.example.pojo.Professor;
 
-public interface ProfessorDao extends DAO<Professor,Long> {
+import javax.persistence.NoResultException;
+
+public interface ProfessorDao extends DAO<Professor, Long> {
+
+    Professor getByEmail(String oldEmail) throws NoResultException;
 }

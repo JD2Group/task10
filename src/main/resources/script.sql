@@ -29,6 +29,9 @@ create table students
     surname varchar(255) not null
 );
 
+insert into students (id, name, surname, email)
+    value (1,'Deleted','Deleted','Deleted');
+
 create table students_courses
 (
     student_id bigint not null,

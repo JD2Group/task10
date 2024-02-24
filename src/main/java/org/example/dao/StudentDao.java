@@ -2,7 +2,11 @@ package org.example.dao;
 
 import org.example.pojo.Student;
 
-public interface StudentDao extends DAO<Student,Long> {
+import javax.persistence.NoResultException;
 
-    Student read(String name, String surname);
+public interface StudentDao extends DAO<Student, Long> {
+
+    Long DELETED_STUDENT_ID = 1L;
+
+    Student getByEmail(String email) throws NoResultException;
 }

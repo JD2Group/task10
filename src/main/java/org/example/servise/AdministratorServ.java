@@ -2,23 +2,41 @@ package org.example.servise;
 
 import org.example.pojo.Course;
 import org.example.pojo.Professor;
+import org.example.pojo.Student;
 
 import java.util.List;
 
 public interface AdministratorServ {
 
 
-    <T> Long createAccount(String name, String surname, Class<T> clazz);//return id of new account
-    <T> void deleteAccount(Long id, Class<T> clazz);
-    <T> void deleteAccount(String name, String surname, Class<T> clazz);
+    Professor createProfessorAccount(String name, String surname, String email);
 
-    Long createCourse(String tittle, Professor professor);//return id of new course
+    Student createStudentAccount(String name, String surname, String email);
+
+    Professor getProfessorByEmail(String email);
+
+    Student getStudentByEmail(String email);
+
+    void deleteAccount(Student student);
+
+    void deleteAccount(Professor professor);
+
+    List<Student> getAllStudents();
+
+    List<Student> getAllStudents(Course course);
+
+    List<Professor> getAllProfessors();
+
     List<Course> getAllCourses();
-    Course getCourse(Professor professor);
-    Course getCourse(String tittle);
-    void updateCourse(Course course,Professor professor);
-    void updateCourse(Course course,String tittle);
-    void deleteCourse(Long id);
+
+    List<Course> getAllCourses(Professor professor);
 
 
+    Course createCourse(String tittle, Professor professor);
+
+    void updateCourse(Course course, Professor professor);
+
+    void updateCourse(Course course, String tittle);
+
+    void deleteCourse(Course course);
 }
