@@ -10,7 +10,6 @@ import java.util.List;
 
 public abstract class DaoImpl<T, R> implements DAO<T, R> {
 
-    public static final String GET_ALL_ENTITIES = "SELECT s FROM %s s";
     private final Class<T> clazz;
     private EntityManager em;
 
@@ -31,7 +30,7 @@ public abstract class DaoImpl<T, R> implements DAO<T, R> {
 
     @Override
     public T read(R id) throws EntityNotFoundException {
-        
+
         return em.find(clazz, id);
     }
 
