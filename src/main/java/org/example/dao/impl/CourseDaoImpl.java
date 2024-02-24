@@ -59,7 +59,12 @@ public class CourseDaoImpl extends DaoImpl<Course, Long> implements CourseDao {
         String sqlQuery = String
                               .format("SELECT c FROM Course c WHERE c.title='%s' AND c.professor=%d AND c.id NOT LIKE '%d'",
                                   title, professor.getId(), CourseDao.DELETED_COURSE_ID);
-        return getCoursesBySqlQuery(sqlQuery);
+
+        getEm().getTransaction().begin();
+        TypedQuery<Course> query = getEm().createQuery(sqlQuery, Course.class);
+        List<Course> courses = query.getResultList();
+        getEm().getTransaction().commit();
+        return courses;
     }
 
     @Override
