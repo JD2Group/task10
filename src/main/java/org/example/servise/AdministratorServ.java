@@ -31,6 +31,7 @@ public interface AdministratorServ {
 
     List<Course> getAllCourses(Professor professor);
 
+    List<Course> getCourseByTitleAndProfEmail(String title, String email);
 
     Course createCourse(String tittle, Professor professor);
 
