@@ -1,7 +1,8 @@
 package org.example.pojo;
 
-
 import lombok.*;
+import org.example.dao.CourseDao;
+import org.hibernate.PropertyValueException;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -44,10 +45,15 @@ public class Course implements Serializable {
     @ManyToMany(mappedBy = "courses", fetch = FetchType.LAZY)
     private Set<Student> students = new HashSet<>();
 
-    public void setProfessor(Professor professor) {
-        this.professor = professor;
-        if (professor != null) {
-            professor.getCourses().add(this);
+    public void setProfessor(Professor professor) throws PropertyValueException {
+
+        if (this.id != CourseDao.DELETED_COURSE_ID) {
+            this.professor = professor;
+            if (professor != null) {
+                professor.getCourses().add(this);
+            }
+        } else {
+            throw new PropertyValueException("You cannot set Id of any professor in this row!", "Course", "professor_id");
         }
     }
 }

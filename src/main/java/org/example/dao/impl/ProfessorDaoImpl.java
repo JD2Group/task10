@@ -18,20 +18,14 @@ public class ProfessorDaoImpl extends DaoImpl<Professor, Long> implements Profes
     }
 
     @Override
-    public Professor create(Professor professor) throws ConstraintViolationException, PropertyValueException {
+    public Professor create(Professor professor) throws ConstraintViolationException/*not unique email*/, PropertyValueException /*empty fields*/ {
 
-        /*if (super.readAll().stream()
-                .allMatch(prof -> (
-                    !prof.getEmail().equalsIgnoreCase(professor.getEmail())))) {*/
-       super.create(professor);
-             /* } else {
-            return null;
-        }*/
+        super.create(professor);
         return professor;
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Long id) throws EntityNotFoundException {
 
         Professor professor = super.read(id);
         if (professor != null) {
@@ -44,18 +38,19 @@ public class ProfessorDaoImpl extends DaoImpl<Professor, Long> implements Profes
             getEm().remove(professor);
             getEm().getTransaction().commit();
         } else {
-            System.out.println(String.format("%s with id=%s not found!", Professor.class.getSimpleName(), id.toString()));
             throw new EntityNotFoundException();
         }
     }
 
     @Override
-    public Professor read(String email) throws NoResultException {
+    public Professor getByEmail(String oldEmail) throws NoResultException {
 
-        Professor professor;
-        String sqlQuery = String.format("SELECT s FROM Professor s WHERE s.email='%s'", email);
+        String sqlQuery = String
+                              .format("SELECT p FROM Professor p WHERE p.email='%s'", oldEmail);
+        getEm().getTransaction().begin();
         TypedQuery<Professor> query = getEm().createQuery(sqlQuery, Professor.class);
-        professor = query.getSingleResult();
+        Professor professor = query.getSingleResult();
+        getEm().getTransaction().commit();
         return professor;
     }
 

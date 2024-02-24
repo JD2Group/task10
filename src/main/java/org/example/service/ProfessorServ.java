@@ -2,6 +2,8 @@ package org.example.service;
 
 import org.example.pojo.*;
 
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
 import java.util.List;
 
 public interface ProfessorServ {
@@ -9,23 +11,12 @@ public interface ProfessorServ {
 
     List<Course> getMyCourses(Professor professor);
 
-    List<Task> getAllTasks(Course course);
+    List<Task> getAllTasks(Course course) throws NoResultException;
 
     List<Student> getAllStudents(Course course);
 
 
-    List<Solution> getAllSolutions(Course course);
-
-    List<Solution> getAllSolutions(Task task);
-
-    List<Solution> getAllSolutions(Course course, Student student);
-
-    Solution getSolution(Student student, Task task);
-
-
-    List<Solution> getAllReadySolutions(Course course);
-
-    List<Solution> getAllReadySolutions(Course course, Student student);
+    Solution getSolution(Student student, Task task) throws EntityNotFoundException;
 
     List<Solution> getAllReadySolutions(Task task);
 
@@ -34,7 +25,7 @@ public interface ProfessorServ {
 
     void updateTask(Task task, String title, String description);
 
-    void deleteTask(Long taskId);
+    void deleteTask(Task task) throws EntityNotFoundException;
 
 
     void review(Solution solution, Integer mark, String review);

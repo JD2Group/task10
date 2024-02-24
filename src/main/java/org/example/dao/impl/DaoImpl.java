@@ -14,6 +14,7 @@ public abstract class DaoImpl<T, R> implements DAO<T, R> {
     private EntityManager em;
 
     public DaoImpl(Class<T> clazz) {
+
         this.clazz = clazz;
         this.em = getEm();
     }
@@ -29,6 +30,7 @@ public abstract class DaoImpl<T, R> implements DAO<T, R> {
 
     @Override
     public T read(R id) throws EntityNotFoundException {
+
         T object;
         em.getTransaction().begin();
         object = em.find(clazz, id);
@@ -38,6 +40,7 @@ public abstract class DaoImpl<T, R> implements DAO<T, R> {
 
     @Override
     public T update(T object) {
+
         T t;
         em.getTransaction().begin();
         t = em.merge(object);
@@ -54,13 +57,11 @@ public abstract class DaoImpl<T, R> implements DAO<T, R> {
         em.getTransaction().commit();
     }
 
-
     @Override
     public List<T> readAll() {
 
-        String sqlQuery = String.format("SELECT s FROM %s s", clazz.getSimpleName());
         em.getTransaction().begin();
-        TypedQuery<T> query = em.createQuery(sqlQuery, clazz);
+        TypedQuery<T> query = em.createQuery(getAllSqlString(), clazz);
         List<T> list = query.getResultList();
         em.getTransaction().commit();
         return list;
@@ -74,12 +75,16 @@ public abstract class DaoImpl<T, R> implements DAO<T, R> {
         }
     }
 
-
     protected EntityManager getEm() {
 
         if (em == null || !em.isOpen()) {
             em = HibernateUtil.getEntityManager();
         }
         return em;
+    }
+
+    protected String getAllSqlString() {
+
+        return String.format("SELECT s FROM %s s", clazz.getSimpleName());
     }
 }
