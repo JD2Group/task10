@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import java.math.BigInteger;
@@ -23,8 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.example.utils.MockConstants.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AdministratorServiceImplTest {
     private AdministratorServ service = new AdministratorServiceImpl();
@@ -40,7 +40,7 @@ class AdministratorServiceImplTest {
                 .build();
         courseDao.create(stubForDeletedCourses);
 
-       Student stubForDeletedStudent = Student.builder()
+        Student stubForDeletedStudent = Student.builder()
                 .name("deleted")
                 .surname("deleted")
                 .email("deleted")
@@ -62,6 +62,10 @@ class AdministratorServiceImplTest {
             studentDao.create(s);
             s.addCourse(courses.get(RANDOM.nextInt(courses.size())));
         });
+
+        courseDao.closeManager();
+        studentDao.closeManager();
+        professorDao.closeManager();
     }
 
     @Test
@@ -84,7 +88,7 @@ class AdministratorServiceImplTest {
         String expectedName = STUDENT_NAME + randomNumber;
         String expectedSurname = STUDENT_SURNAME + randomNumber;
         String expectedEmail = String.format(STUDENT_EMAIL, randomNumber) + RANDOM.nextInt(MAX_RANDOM_NUMBER);
-        service.createProfessorAccount(expectedName, expectedSurname, expectedEmail);
+        service.createStudentAccount(expectedName, expectedSurname, expectedEmail);
         Student actual = service.getStudentByEmail(expectedEmail);
 
         assertEquals(expectedName, actual.getName());
@@ -95,11 +99,11 @@ class AdministratorServiceImplTest {
     @Test
     void deleteStudentAccount() {
         Student student = MockUtils.generateStudent();
-        service.createStudentAccount(student.getName(), student.getSurname(), student.getEmail());
+        student = service.createStudentAccount(student.getName(), student.getSurname(), student.getEmail());
+        String email = student.getEmail();
         service.deleteAccount(student);
-        Student actual = service.getStudentByEmail(student.getEmail());
 
-        assertNull(actual);
+        assertThrows(NoResultException.class, () -> service.getStudentByEmail(email));
     }
 
     @Test
