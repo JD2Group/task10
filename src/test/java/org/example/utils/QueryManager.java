@@ -1,15 +1,18 @@
 package org.example.utils;
 
+import net.bytebuddy.asm.Advice;
 import org.example.dao.*;
 import org.example.dao.impl.*;
 import org.example.pojo.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import static org.example.utils.MockConstants.*;
 import static org.example.utils.MockConstants.DELETE_ALL_STUDENTS;
@@ -22,7 +25,6 @@ public class QueryManager {
         ProfessorDao professorDao = new ProfessorDaoImpl();
         TaskDao taskDao = new TaskDaoImpl();
         SolutionDao solutionDao = new SolutionDaoImpl();
-
 
         Professor professor = MockUtils.generateProfessor();
         professor.setEmail(professorEmail);
@@ -82,18 +84,22 @@ public class QueryManager {
         manager.close();
     }
 
-    public static int getNumberOfObjects(String query) {
-        return getNumberOfObjects(query, null);
-    }
 
-    public static int getNumberOfObjects(String query, Long id) {
+    public static int getNumberOfObjects(String query, Long... id) {
         EntityManager manager = HibernateUtil.getEntityManager();
         Query numberOfStudentsQuery = manager.createNativeQuery(query);
-        if (id != null) {
-            numberOfStudentsQuery.setParameter(1, id);
+        for (int i = 1; i <= id.length; i++) {
+            numberOfStudentsQuery.setParameter(i, id[i - 1]);
         }
         BigInteger result = (BigInteger) numberOfStudentsQuery.getSingleResult();
-
+        manager.close();
         return result.intValue();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> List<T> getList(String query, Class<T> objectClass) {
+        EntityManager manager = HibernateUtil.getEntityManager();
+        Query selectQuery = manager.createNativeQuery(query, objectClass);
+        return (List<T>) selectQuery.getResultList();
     }
 }

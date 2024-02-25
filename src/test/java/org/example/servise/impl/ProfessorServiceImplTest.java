@@ -35,7 +35,7 @@ class ProfessorServiceImplTest {
 
     @AfterAll
     public static void deleteAll() {
-        QueryManager.deleteAll();
+//        QueryManager.deleteAll();
     }
 
     @BeforeEach
