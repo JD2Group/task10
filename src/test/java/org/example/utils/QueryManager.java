@@ -84,6 +84,11 @@ public class QueryManager {
         manager.close();
     }
 
+    private static void executeQuery(Query query) {
+        query.executeUpdate();
+
+    }
+
 
     public static int getNumberOfObjects(String query, Long... id) {
         EntityManager manager = HibernateUtil.getEntityManager();
