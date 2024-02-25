@@ -35,17 +35,6 @@ class AdministratorServiceImplTest {
         StudentDao studentDao = new StudentDaoImpl();
         ProfessorDao professorDao = new ProfessorDaoImpl();
 
-        Course stubForDeletedCourses = Course.builder()
-                .title("Deleted")
-                .build();
-        courseDao.create(stubForDeletedCourses);
-
-        Student stubForDeletedStudent = Student.builder()
-                .name("deleted")
-                .surname("deleted")
-                .email("deleted")
-                .build();
-
         Professor professor = MockUtils.generateProfessor();
         professor.setEmail(PROFESSOR_EMAIL);
         professorDao.create(professor);
@@ -57,7 +46,6 @@ class AdministratorServiceImplTest {
             courseDao.update(c);
         });
 
-        studentDao.create(stubForDeletedStudent);
         List<Student> students = new ArrayList<>(MockUtils.generateRandomStudents());
         students.forEach(s -> {
             studentDao.create(s);
