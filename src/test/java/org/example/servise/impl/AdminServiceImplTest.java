@@ -1,60 +1,31 @@
 package org.example.servise.impl;
 
-import org.example.dao.CourseDao;
-import org.example.dao.ProfessorDao;
-import org.example.dao.StudentDao;
-import org.example.dao.impl.CourseDaoImpl;
-import org.example.dao.impl.ProfessorDaoImpl;
-import org.example.dao.impl.StudentDaoImpl;
 import org.example.pojo.Course;
 import org.example.pojo.Professor;
 import org.example.pojo.Student;
-import org.example.servise.AdministratorServ;
-import org.example.utils.HibernateUtil;
+import org.example.servise.AdminService;
 import org.example.utils.MockUtils;
+import org.example.utils.QueryManager;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.example.utils.MockConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-class AdministratorServiceImplTest {
-    private AdministratorServ service = new AdministratorServiceImpl();
+class AdminServiceImplTest {
+    private AdminService service = new AdminServiceImpl();
 
     @BeforeAll
-    public static void saveStudent() {
-        CourseDao courseDao = new CourseDaoImpl();
-        StudentDao studentDao = new StudentDaoImpl();
-        ProfessorDao professorDao = new ProfessorDaoImpl();
+    public static void createData() {
+        QueryManager.createTestData(PROFESSOR_EMAIL_ADMIN_TEST);
+    }
 
-        Professor professor = MockUtils.generateProfessor();
-        professor.setEmail(PROFESSOR_EMAIL);
-        professorDao.create(professor);
-
-        List<Course> courses = new ArrayList<>(MockUtils.generateRandomCourses());
-        courses.forEach(c -> {
-            courseDao.create(c);
-            c.setProfessor(professor);
-            courseDao.update(c);
-        });
-
-        List<Student> students = new ArrayList<>(MockUtils.generateRandomStudents());
-        students.forEach(s -> {
-            studentDao.create(s);
-            s.addCourse(courses.get(RANDOM.nextInt(courses.size())));
-        });
-
-        courseDao.closeManager();
-        studentDao.closeManager();
-        professorDao.closeManager();
+    @AfterAll
+    public static void deleteAll() {
+       QueryManager.deleteAll();
     }
 
     @Test
@@ -107,7 +78,7 @@ class AdministratorServiceImplTest {
 
     @Test
     void getAllStudents() {
-        int expected = getNumberOfObjects(GET_NUMBER_OF_STUDENTS_QUERY);
+        int expected = QueryManager.getNumberOfObjects(GET_NUMBER_OF_STUDENTS_QUERY);
         List<Student> actual = service.getAllStudents();
 
         assertEquals(expected, actual.size());
@@ -116,7 +87,7 @@ class AdministratorServiceImplTest {
     @Test
     void getAllStudentsByCourse() {
         Course course = service.getAllCourses().get(1);
-        int expected = getNumberOfObjects(GET_NUMBER_OF_STUDENTS_BY_COURSE_QUERY, course.getId());
+        int expected = QueryManager.getNumberOfObjects(GET_NUMBER_OF_STUDENTS_BY_COURSE_QUERY, course.getId());
         List<Student> actual = service.getAllStudents(course);
 
         assertEquals(expected, actual.size());
@@ -124,7 +95,7 @@ class AdministratorServiceImplTest {
 
     @Test
     void getAllProfessors() {
-        int expected = getNumberOfObjects(GET_NUMBER_OF_PROFESSORS_QUERY);
+        int expected = QueryManager.getNumberOfObjects(GET_NUMBER_OF_PROFESSORS_QUERY);
         List<Professor> actual = service.getAllProfessors();
 
         assertEquals(expected, actual.size());
@@ -132,7 +103,7 @@ class AdministratorServiceImplTest {
 
     @Test
     void getAllCourses() {
-        int expected = getNumberOfObjects(GET_NUMBER_OF_COURSES_QUERY);
+        int expected = QueryManager.getNumberOfObjects(GET_NUMBER_OF_COURSES_QUERY);
         List<Course> actual = service.getAllCourses();
 
         assertEquals(expected, actual.size());
@@ -140,8 +111,8 @@ class AdministratorServiceImplTest {
 
     @Test
     void getAllCoursesByProfessor() {
-        Professor professor = service.getProfessorByEmail(PROFESSOR_EMAIL);
-        int expected = getNumberOfObjects(GET_NUMBER_OF_COURSES_BY_PROFESSOR_QUERY, professor.getId());
+        Professor professor = service.getProfessorByEmail(PROFESSOR_EMAIL_ADMIN_TEST);
+        int expected = QueryManager.getNumberOfObjects(GET_NUMBER_OF_COURSES_BY_PROFESSOR_QUERY, professor.getId());
         List<Course> actual = service.getAllCourses(professor);
 
         assertEquals(expected, actual.size());
@@ -149,10 +120,10 @@ class AdministratorServiceImplTest {
 
     @Test
     void createCourse() {
-        Professor professor = service.getProfessorByEmail(PROFESSOR_EMAIL);
+        Professor professor = service.getProfessorByEmail(PROFESSOR_EMAIL_ADMIN_TEST);
         String courseTitle = COURSE_TITLE_PATTERN + RANDOM.nextInt(MAX_RANDOM_NUMBER);
         service.createCourse(courseTitle, professor);
-        Course actual = service.getCoursesByTitleAndProfEmail(courseTitle, PROFESSOR_EMAIL).get(0);
+        Course actual = service.getCoursesByTitleAndProfEmail(courseTitle, PROFESSOR_EMAIL_ADMIN_TEST).get(0);
 
         assertEquals(courseTitle, actual.getTitle());
         assertEquals(professor, actual.getProfessor());
@@ -187,22 +158,5 @@ class AdministratorServiceImplTest {
         List<Course> actual = service.getCoursesByTitleAndProfEmail(course.getTitle(), course.getProfessor().getEmail());
 
         assertTrue(actual.isEmpty());
-    }
-
-    private int getNumberOfObjects(String query) {
-        return getNumberOfObjects(query, null);
-    }
-
-    private int getNumberOfObjects(String query, Long id) {
-        EntityManager manager = HibernateUtil.getEntityManager();
-//        manager.getTransaction().begin();
-        Query numberOfStudentsQuery = manager.createNativeQuery(query);
-        if (id != null) {
-            numberOfStudentsQuery.setParameter(1, id);
-        }
-        BigInteger result = (BigInteger) numberOfStudentsQuery.getSingleResult();
-//        manager.close();
-
-        return result.intValue();
     }
 }

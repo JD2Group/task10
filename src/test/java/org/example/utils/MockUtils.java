@@ -2,7 +2,7 @@ package org.example.utils;
 
 import org.example.pojo.*;
 
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -10,28 +10,34 @@ import static org.example.utils.MockConstants.*;
 
 public abstract class MockUtils {
 
-    public static Set<Course> generateRandomCourses() {
+    public static List<Course> generateRandomCourses() {
         return IntStream.range(0, MAX_LIST_SIZE)
                 .mapToObj(i -> MockUtils.generateCourse())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
-    public static Set<Professor> generateRandomProfessors() {
+    public static List<Professor> generateRandomProfessors() {
         return IntStream.range(0, MAX_LIST_SIZE)
                 .mapToObj(i -> MockUtils.generateProfessor())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
-    public static Set<Student> generateRandomStudents() {
+    public static List<Student> generateRandomStudents() {
         return IntStream.range(0, MAX_LIST_SIZE)
                 .mapToObj(i -> MockUtils.generateStudent())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
-    public static Set<Task> generateRandomTasks() {
+    public static List<Task> generateRandomTasks() {
         return IntStream.range(0, MAX_LIST_SIZE)
                 .mapToObj(i -> MockUtils.generateTask())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
+    }
+
+    public static List<Solution> generateRandomSolutions() {
+        return IntStream.range(0, MAX_LIST_SIZE)
+                .mapToObj(i -> MockUtils.generateSolution())
+                .collect(Collectors.toList());
     }
 
     public static Course generateCourse() {
@@ -45,12 +51,13 @@ public abstract class MockUtils {
         return Professor.builder()
                 .name(PROFESSOR_NAME_PATTERN + randomNumber)
                 .surname(PROFESSOR_SURNAME_PATTERN + RANDOM.nextInt(MAX_RANDOM_NUMBER))
-                .email(String.format(PROFESSOR_EMAIL_PATTERN, randomNumber) + RANDOM.nextInt(MAX_RANDOM_NUMBER))
+                .email(String.format(PROFESSOR_EMAIL_PATTERN, randomNumber) + RANDOM.nextInt())
                 .build();
     }
 
     public static Solution generateSolution() {
         return Solution.builder()
+                .response(RESPONSE_PATTERN + RANDOM.nextInt(MAX_RANDOM_NUMBER))
                 .build();
     }
 
@@ -59,7 +66,7 @@ public abstract class MockUtils {
         return Student.builder()
                 .name(STUDENT_NAME_PATTERN + randomNumber)
                 .surname(STUDENT_SURNAME_PATTERN + RANDOM.nextInt(MAX_RANDOM_NUMBER))
-                .email(String.format(STUDENT_EMAIL_PATTERN, randomNumber) + RANDOM.nextInt(MAX_RANDOM_NUMBER))
+                .email(String.format(STUDENT_EMAIL_PATTERN, randomNumber) + RANDOM.nextInt())
                 .build();
     }
 
