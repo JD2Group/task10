@@ -6,7 +6,6 @@ import org.example.pojo.Course;
 import org.example.utils.HibernateUtil;
 import org.example.utils.MockUtils;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
@@ -18,19 +17,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class CourseDaoImplTest {
     private final CourseDao courseDao = new CourseDaoImpl();
 
-    @BeforeAll
-    public static void saveCourse() {
-        Course stubForDeletedCourses = Course.builder()
-                .title("Deleted")
-                .build();
-        CourseDao courseDao = new CourseDaoImpl();
-        courseDao.create(stubForDeletedCourses);
-    }
 
     @AfterAll
     public static void deleteAll() {
         EntityManager manager = HibernateUtil.getEntityManager();
         manager.getTransaction().begin();
+        Query deleteAllFromStudentsCourses = manager.createNativeQuery(DELETE_ALL_STUDENTS_COURSES);
+        deleteAllFromStudentsCourses.executeUpdate();
+        manager.flush();
         Query deleteAll = manager.createNativeQuery(DELETE_ALL_COURSES);
         deleteAll.executeUpdate();
         manager.getTransaction().commit();

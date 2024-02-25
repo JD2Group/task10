@@ -11,23 +11,17 @@
         <class>org.example.pojo.Student</class>
         <class>org.example.pojo.Task</class>
         <properties>
-<!--            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>-->
-<!--&lt;!&ndash;            <property name="javax.persistence.jdbc.url" value="jdbc:h2:./target/h2db/testDB"/>&ndash;&gt;-->
-<!--            <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test"/>-->
-<!--            <property name="javax.persistence.jdbc.user" value="sa"/>-->
-<!--            <property name="javax.persistence.jdbc.password" value=""/>-->
-            <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-            <property name="javax.persistence.jdbc.url"
-                      value="jdbc:mysql://localhost:3306/University?createDatabaseIfNotExist=true"/>
-            <property name="javax.persistence.jdbc.user" value="root"/>
-            <property name="javax.persistence.jdbc.password" value="Helga8707!"/>
+            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:h2:./target/h2db/dbForTests"/>
+            <property name="javax.persistence.jdbc.user" value="sa"/>
+            <property name="javax.persistence.jdbc.password" value=""/>
             <property name="hibernate.dialect.storage_engine" value="innodb"/>
-            <property name="hibernate.hbm2ddl.auto" value="create"/>
+            <property name="hibernate.hbm2ddl.auto" value="validate"/>
             <property name="hibernate.use_sql_comments" value="true"/>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.connection.pool_size" value="10"/>
             <property name="hibernate.connection.isolation" value="2"/>
-<!--            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>-->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
         </properties>
 
     </persistence-unit>

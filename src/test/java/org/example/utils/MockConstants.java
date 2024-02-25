@@ -19,11 +19,12 @@ public abstract class MockConstants {
     public static final String TASK_DESCRIPTION_PATTERN = "Task description No.";
     public static final int MAX_LIST_SIZE = 5;
     public static final String UPDATE = "updated";
-    public static final String DELETE_ALL_COURSES = "delete from courses";
+    public static final String DELETE_ALL_COURSES = "delete from courses where id <> 1";
     public static final String DELETE_ALL_PROFESSORS = "delete from professors";
     public static final String DELETE_ALL_SOLUTIONS = "delete from solutions";
     public static final String DELETE_ALL_STUDENTS = "delete from students";
-    public static final String DELETE_ALL_TASK = "delete from tasks";
+    public static final String DELETE_ALL_STUDENTS_COURSES = "delete from students_courses";
+    public static final String DELETE_ALL_TASK = "delete from tasks where id <> 1";
     public static final String GET_NUMBER_OF_STUDENTS_QUERY = "select count(*) from students";
     public static final String GET_NUMBER_OF_STUDENTS_BY_COURSE_QUERY = "select count(*) from students_courses where course_id = ?1";
     public static final String GET_NUMBER_OF_PROFESSORS_QUERY = "select count(*) from professors";

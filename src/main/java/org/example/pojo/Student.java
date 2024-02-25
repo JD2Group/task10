@@ -28,7 +28,7 @@ public class Student extends Person implements Serializable {
     private Set<Course> courses = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "student", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "student", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<Solution> solutions = new HashSet<>();
 
     public void addCourse(Course course) {
