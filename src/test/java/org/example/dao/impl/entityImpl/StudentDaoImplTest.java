@@ -22,6 +22,9 @@ class StudentDaoImplTest {
     public static void deleteAll() {
         EntityManager manager = HibernateUtil.getEntityManager();
         manager.getTransaction().begin();
+        Query deleteAllFromStudentsCourses = manager.createNativeQuery(DELETE_ALL_STUDENTS_COURSES);
+        deleteAllFromStudentsCourses.executeUpdate();
+        manager.flush();
         Query deleteAll = manager.createNativeQuery(DELETE_ALL_STUDENTS);
         deleteAll.executeUpdate();
         manager.getTransaction().commit();
