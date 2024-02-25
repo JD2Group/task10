@@ -36,16 +36,16 @@ public abstract class MockUtils {
 
     public static Course generateCourse() {
         return Course.builder()
-                .title(COURSE_TITLE + RANDOM.nextInt(MAX_RANDOM_NUMBER))
+                .title(COURSE_TITLE_PATTERN + RANDOM.nextInt(MAX_RANDOM_NUMBER))
                 .build();
     }
 
     public static Professor generateProfessor() {
         int randomNumber = RANDOM.nextInt(MAX_RANDOM_NUMBER);
         return Professor.builder()
-                .name(PROFESSOR_NAME + randomNumber)
-                .surname(PROFESSOR_SURNAME + RANDOM.nextInt(MAX_RANDOM_NUMBER))
-                .email(String.format(PROFESSOR_EMAIL, randomNumber) + RANDOM.nextInt(MAX_RANDOM_NUMBER))
+                .name(PROFESSOR_NAME_PATTERN + randomNumber)
+                .surname(PROFESSOR_SURNAME_PATTERN + RANDOM.nextInt(MAX_RANDOM_NUMBER))
+                .email(String.format(PROFESSOR_EMAIL_PATTERN, randomNumber) + RANDOM.nextInt(MAX_RANDOM_NUMBER))
                 .build();
     }
 
@@ -57,16 +57,16 @@ public abstract class MockUtils {
     public static Student generateStudent() {
         int randomNumber = RANDOM.nextInt(MAX_RANDOM_NUMBER);
         return Student.builder()
-                .name(STUDENT_NAME + randomNumber)
-                .surname(STUDENT_SURNAME + RANDOM.nextInt(MAX_RANDOM_NUMBER))
-                .email(String.format(STUDENT_EMAIL, randomNumber) + RANDOM.nextInt(MAX_RANDOM_NUMBER))
+                .name(STUDENT_NAME_PATTERN + randomNumber)
+                .surname(STUDENT_SURNAME_PATTERN + RANDOM.nextInt(MAX_RANDOM_NUMBER))
+                .email(String.format(STUDENT_EMAIL_PATTERN, randomNumber) + RANDOM.nextInt(MAX_RANDOM_NUMBER))
                 .build();
     }
 
     public static Task generateTask() {
         return Task.builder()
-                .title(TASK_TITLE + RANDOM.nextInt(MAX_RANDOM_NUMBER))
-                .description(TASK_DESCRIPTION + RANDOM.nextInt(MAX_RANDOM_NUMBER))
+                .title(TASK_TITLE_PATTERN + RANDOM.nextInt(MAX_RANDOM_NUMBER))
+                .description(TASK_DESCRIPTION_PATTERN + RANDOM.nextInt(MAX_RANDOM_NUMBER))
                 .build();
     }
 

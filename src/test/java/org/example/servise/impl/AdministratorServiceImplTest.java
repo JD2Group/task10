@@ -47,6 +47,7 @@ class AdministratorServiceImplTest {
                 .build();
 
         Professor professor = MockUtils.generateProfessor();
+        professor.setEmail(PROFESSOR_EMAIL);
         professorDao.create(professor);
 
         List<Course> courses = new ArrayList<>(MockUtils.generateRandomCourses());
@@ -71,9 +72,9 @@ class AdministratorServiceImplTest {
     @Test
     void createProfessorAccount() {
         int randomNumber = RANDOM.nextInt(MAX_RANDOM_NUMBER);
-        String expectedName = PROFESSOR_NAME + randomNumber;
-        String expectedSurname = PROFESSOR_SURNAME + randomNumber;
-        String expectedEmail = String.format(PROFESSOR_EMAIL, randomNumber) + RANDOM.nextInt(MAX_RANDOM_NUMBER);
+        String expectedName = PROFESSOR_NAME_PATTERN + randomNumber;
+        String expectedSurname = PROFESSOR_SURNAME_PATTERN + randomNumber;
+        String expectedEmail = String.format(PROFESSOR_EMAIL_PATTERN, randomNumber) + RANDOM.nextInt(MAX_RANDOM_NUMBER);
         service.createProfessorAccount(expectedName, expectedSurname, expectedEmail);
         Professor actual = service.getProfessorByEmail(expectedEmail);
 
@@ -85,9 +86,9 @@ class AdministratorServiceImplTest {
     @Test
     void createStudentAccount() {
         int randomNumber = RANDOM.nextInt(MAX_RANDOM_NUMBER);
-        String expectedName = STUDENT_NAME + randomNumber;
-        String expectedSurname = STUDENT_SURNAME + randomNumber;
-        String expectedEmail = String.format(STUDENT_EMAIL, randomNumber) + RANDOM.nextInt(MAX_RANDOM_NUMBER);
+        String expectedName = STUDENT_NAME_PATTERN + randomNumber;
+        String expectedSurname = STUDENT_SURNAME_PATTERN + randomNumber;
+        String expectedEmail = String.format(STUDENT_EMAIL_PATTERN, randomNumber) + RANDOM.nextInt(MAX_RANDOM_NUMBER);
         service.createStudentAccount(expectedName, expectedSurname, expectedEmail);
         Student actual = service.getStudentByEmail(expectedEmail);
 
@@ -109,11 +110,11 @@ class AdministratorServiceImplTest {
     @Test
     void deleteProfessorAccount() {
         Professor professor = MockUtils.generateProfessor();
-        service.createStudentAccount(professor.getName(), professor.getSurname(), professor.getEmail());
+        professor = service.createProfessorAccount(professor.getName(), professor.getSurname(), professor.getEmail());
+        String email = professor.getEmail();
         service.deleteAccount(professor);
-        Professor actual = service.getProfessorByEmail(professor.getEmail());
 
-        assertNull(actual);
+        assertThrows(NoResultException.class, () -> service.getProfessorByEmail(email));
     }
 
     @Test
@@ -121,7 +122,7 @@ class AdministratorServiceImplTest {
         int expected = getNumberOfObjects(GET_NUMBER_OF_STUDENTS_QUERY);
         List<Student> actual = service.getAllStudents();
 
-        assertEquals(expected - 1, actual.size());
+        assertEquals(expected, actual.size());
     }
 
     @Test
@@ -151,18 +152,19 @@ class AdministratorServiceImplTest {
 
     @Test
     void getAllCoursesByProfessor() {
-        int expected = getNumberOfObjects(GET_NUMBER_OF_COURSES_QUERY, PROFESSOR_ID);
-        List<Course> actual = service.getAllCourses();
+        Professor professor = service.getProfessorByEmail(PROFESSOR_EMAIL);
+        int expected = getNumberOfObjects(GET_NUMBER_OF_COURSES_BY_PROFESSOR_QUERY, professor.getId());
+        List<Course> actual = service.getAllCourses(professor);
 
         assertEquals(expected, actual.size());
     }
 
     @Test
     void createCourse() {
-        Professor professor = service.getAllProfessors().get(0);
-        String courseTitle = COURSE_TITLE + RANDOM.nextInt(MAX_RANDOM_NUMBER);
+        Professor professor = service.getProfessorByEmail(PROFESSOR_EMAIL);
+        String courseTitle = COURSE_TITLE_PATTERN + RANDOM.nextInt(MAX_RANDOM_NUMBER);
         service.createCourse(courseTitle, professor);
-        Course actual = service.getCourseByTitleAndProfEmail(courseTitle, professor.getEmail()).get(0);
+        Course actual = service.getCoursesByTitleAndProfEmail(courseTitle, PROFESSOR_EMAIL).get(0);
 
         assertEquals(courseTitle, actual.getTitle());
         assertEquals(professor, actual.getProfessor());
@@ -173,7 +175,7 @@ class AdministratorServiceImplTest {
         List<Course> courses = service.getAllCourses();
         Course course = courses.get(RANDOM.nextInt(courses.size()));
         service.updateCourse(course, UPDATE);
-        String actual = service.getCourseByTitleAndProfEmail(UPDATE, course.getProfessor().getEmail()).get(0).getTitle();
+        String actual = service.getCoursesByTitleAndProfEmail(UPDATE, course.getProfessor().getEmail()).get(0).getTitle();
 
         assertEquals(UPDATE, actual);
     }
@@ -182,9 +184,9 @@ class AdministratorServiceImplTest {
     void updateCourseProfessor() {
         List<Course> courses = service.getAllCourses();
         Course course = courses.get(RANDOM.nextInt(courses.size()));
-        Professor expected = service.createProfessorAccount(PROFESSOR_NAME, PROFESSOR_SURNAME, PROFESSOR_EMAIL);
+        Professor expected = service.createProfessorAccount(PROFESSOR_NAME_PATTERN, PROFESSOR_SURNAME_PATTERN, PROFESSOR_EMAIL_PATTERN);
         service.updateCourse(course, expected);
-        Professor actual = service.getCourseByTitleAndProfEmail(UPDATE, course.getProfessor().getEmail()).get(0).getProfessor();
+        Professor actual = service.getCoursesByTitleAndProfEmail(course.getTitle(), course.getProfessor().getEmail()).get(0).getProfessor();
 
         assertEquals(expected, actual);
     }
@@ -194,9 +196,9 @@ class AdministratorServiceImplTest {
         List<Course> courses = service.getAllCourses();
         Course course = courses.get(RANDOM.nextInt(courses.size()));
         service.deleteCourse(course);
-        Course actual = service.getCourseByTitleAndProfEmail(course.getTitle(), course.getProfessor().getEmail()).get(0);
+        List<Course> actual = service.getCoursesByTitleAndProfEmail(course.getTitle(), course.getProfessor().getEmail());
 
-        assertNull(actual);
+        assertTrue(actual.isEmpty());
     }
 
     private int getNumberOfObjects(String query) {
@@ -205,13 +207,13 @@ class AdministratorServiceImplTest {
 
     private int getNumberOfObjects(String query, Long id) {
         EntityManager manager = HibernateUtil.getEntityManager();
-        manager.getTransaction().begin();
+//        manager.getTransaction().begin();
         Query numberOfStudentsQuery = manager.createNativeQuery(query);
         if (id != null) {
             numberOfStudentsQuery.setParameter(1, id);
         }
         BigInteger result = (BigInteger) numberOfStudentsQuery.getSingleResult();
-        manager.close();
+//        manager.close();
 
         return result.intValue();
     }
