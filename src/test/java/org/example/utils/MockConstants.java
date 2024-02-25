@@ -35,6 +35,10 @@ public abstract class MockConstants {
     public static final String PROFESSOR_EMAIL_PROFESSOR_TEST = "professor test email";
     public static final String PROFESSOR_EMAIL_STUDENTS_TEST = "student test email";
     public static final String GET_STUDENTS_LIST_QUERY = "select * from students where id IN (SELECT student_id from solutions)";
+    public static final String GET_COURSES_BY_STUDENT_QUERY = "select * from courses where id IN (SELECT course_id from students_courses where student_id = %d)";
+    public static final String GET_COURSES_WITHOUT_CURRENT_STUDENT_QUERY = "select * from courses where id NOT IN (SELECT course_id from students_courses where student_id = %d)";
     public static final String GET_NUMBER_OF_COURSES_BY_STUDENT_QUERY = "select count(*) from students_courses where student_id = ?1";
-    public static final String IS_STUDENT_REGISTERED_FOR_COURSE_QUERY = "select exists(select * from students_courses where course_id=?1 and student_id=?2)";
+    public static final String IS_STUDENT_REGISTERED_FOR_COURSE_QUERY = "select exists(select * from students_courses where course_id = ?1 and student_id = ?2)";
+    public static final String GET_TASK_BY_COURSE_QUERY = "select * from tasks where course_id = %d";
+    public static final String GET_SOLUTION_QUERY = "select * from solutions where readyForReview = 0";
 }
