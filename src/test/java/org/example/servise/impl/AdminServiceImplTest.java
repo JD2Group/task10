@@ -25,7 +25,7 @@ class AdminServiceImplTest {
 
     @AfterAll
     public static void deleteAll() {
-       QueryManager.deleteAll();
+//       QueryManager.deleteAll();
     }
 
     @Test
