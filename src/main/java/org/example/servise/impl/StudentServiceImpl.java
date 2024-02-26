@@ -30,7 +30,7 @@ public class StudentServiceImpl extends ParrentService implements StudentServ {
     @Override
     public List<Course> getMyCourses(Student student) throws NoResultException {
 
-        return getCourseDao().readAllByStudentId(student.getId());
+        return getStudentDao().readAllByStudentId(student.getId());
     }
 
     @Override
