@@ -91,16 +91,6 @@ public class QueryManager {
         return result.intValue();
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> List<T> getList(String query, Class<T> objectClass, Long... id) {
-        checkEntityManager();
-        Query selectQuery = manager.createNativeQuery(query, objectClass);
-        for (int i = 1; i <= id.length; i++) {
-            selectQuery.setParameter(i, id[i - 1]);
-        }
-        return (List<T>) selectQuery.getResultList();
-    }
-
     private void checkEntityManager() {
         if (!manager.isOpen()) {
             manager = HibernateUtil.getEntityManager();

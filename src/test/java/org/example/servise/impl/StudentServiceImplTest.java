@@ -1,7 +1,13 @@
 package org.example.servise.impl;
 
+import org.example.dao.CourseDao;
 import org.example.dao.SolutionDao;
+import org.example.dao.StudentDao;
+import org.example.dao.TaskDao;
+import org.example.dao.impl.CourseDaoImpl;
 import org.example.dao.impl.SolutionDaoImpl;
+import org.example.dao.impl.StudentDaoImpl;
+import org.example.dao.impl.TaskDaoImpl;
 import org.example.excepion.Exceptions;
 import org.example.pojo.Course;
 import org.example.pojo.Solution;
@@ -20,6 +26,10 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 class StudentServiceImplTest {
     private QueryManager queryManager = new QueryManager();
     private StudentService service = new StudentServiceImpl();
+    private StudentDao studentDao;
+    private CourseDao courseDao;
+    private TaskDao taskDao;
+    private SolutionDao solutionDao;
     private Student student;
 
     @BeforeAll
@@ -38,12 +48,20 @@ class StudentServiceImplTest {
 
     @BeforeEach
     public void setStudents() {
-        List<Student> students = queryManager.getList(GET_STUDENTS_LIST_QUERY, Student.class);
+        studentDao = new StudentDaoImpl();
+        courseDao = new CourseDaoImpl();
+        taskDao = new TaskDaoImpl();
+        solutionDao = new SolutionDaoImpl();
+        List<Student> students = studentDao.readAll();
         student = students.get(RANDOM.nextInt(students.size()));
     }
 
     @AfterEach
     public void closeQueryManager() {
+        studentDao.closeManager();
+        courseDao.closeManager();
+        taskDao.closeManager();
+        solutionDao.closeManager();
         queryManager.closeSession();
     }
 
@@ -57,14 +75,14 @@ class StudentServiceImplTest {
     @Test
     void getAllCourses() {
         int expected = queryManager.getNumberOfObjects(GET_NUMBER_OF_COURSES_QUERY);
-        List<Course> actual = service.getAllCourses();
+        List<Course> actual = courseDao.readAll();
 
         assertEquals(expected, actual.size());
     }
 
     @Test
     void getMyCourses() {
-        int expected = queryManager.getNumberOfObjects(GET_NUMBER_OF_COURSES_BY_STUDENT_QUERY, student.getId());
+        int expected = studentDao.readAllByStudentId(student.getId()).size();
         List<Course> actual = service.getMyCourses(student);
 
         assertEquals(expected, actual.size());
@@ -72,7 +90,7 @@ class StudentServiceImplTest {
 
     @Test
     void checkInCourse() {
-        List<Course> courses = queryManager.getList(GET_COURSES_WITHOUT_CURRENT_STUDENT_QUERY, Course.class, student.getId());
+        List<Course> courses = studentDao.readAllByStudentId(student.getId());
         Course course = courses.get(RANDOM.nextInt(courses.size()));
         service.checkInCourse(course, student);
         int expected = 1;
@@ -83,7 +101,7 @@ class StudentServiceImplTest {
 
     @Test
     void checkOutCourse() {
-        List<Course> courses = queryManager.getList(GET_COURSES_BY_STUDENT_QUERY, Course.class, student.getId());
+        List<Course> courses = studentDao.readAllByStudentId(student.getId());
         Course course = courses.get(RANDOM.nextInt(courses.size()));
         service.checkOutCourse(course, student);
         int expected = 0;
@@ -94,18 +112,17 @@ class StudentServiceImplTest {
 
     @Test
     void getTasksFromCourse() {
-        List<Course> courses = queryManager.getList(GET_COURSES_BY_STUDENT_QUERY, Course.class, student.getId());
+        List<Course> courses = studentDao.readAllByStudentId(student.getId());
         Course course = courses.get(RANDOM.nextInt(courses.size()));
-        List<Task> expected = queryManager.getList(GET_TASK_BY_COURSE_QUERY, Task.class, course.getId());
+        List<Task> expected = taskDao.readAllByCourseId(course.getId());
         List<Task> actual = service.getTasksFromCourse(course);
 
         assertIterableEquals(expected, actual);
-
     }
 
     @Test
     void getSolution() {
-        List<Solution> solutions = queryManager.getList(GET_SOLUTIONS_QUERY, Solution.class);
+        List<Solution> solutions = solutionDao.readAll();
         Solution expected = solutions.get(RANDOM.nextInt(solutions.size()));
         Task task = expected.getTask();
         Student student = expected.getStudent();
@@ -116,7 +133,7 @@ class StudentServiceImplTest {
 
     @Test
     void solveTask() {
-        List<Solution> solutions = queryManager.getList(GET_SOLUTIONS_QUERY, Solution.class);
+        List<Solution> solutions = solutionDao.readAll();
         Solution solution = solutions.get(RANDOM.nextInt(solutions.size()));
         try {
             service.solveTask(solution, true, UPDATE);

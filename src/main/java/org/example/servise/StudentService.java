@@ -28,7 +28,7 @@ public interface StudentService {
     List<Task> getAllMyTasks(Student student) throws NoResultException; //Считаю бессмысленным метод, т.е. если на курсе есть задача,
                                                                     //то студент должен ее делать, или тогда где id студента в таблице?
 
-    Solution getSolution(Task task, Student student); //лучше тогда create
+    Solution getSolution(Task task, Student student);
 
 
     void solveTask(Solution solution, boolean readyForReview, String response) throws Exceptions.SolutionIsResolvedException; //Нафига тут булеан передавать?
