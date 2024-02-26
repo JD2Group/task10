@@ -10,6 +10,7 @@ import java.util.List;
 
 public abstract class DaoImpl<T, R> implements DAO<T, R> {
 
+    public static final String GET_ALL_ENTITIES = "SELECT s FROM %s s";
     private final Class<T> clazz;
     private EntityManager em;
 
@@ -30,12 +31,8 @@ public abstract class DaoImpl<T, R> implements DAO<T, R> {
 
     @Override
     public T read(R id) throws EntityNotFoundException {
-
-        T object;
-        em.getTransaction().begin();
-        object = em.find(clazz, id);
-        em.getTransaction().commit();
-        return object;
+        
+        return em.find(clazz, id);
     }
 
     @Override
@@ -60,11 +57,8 @@ public abstract class DaoImpl<T, R> implements DAO<T, R> {
     @Override
     public List<T> readAll() {
 
-        em.getTransaction().begin();
         TypedQuery<T> query = em.createQuery(getAllSqlString(), clazz);
-        List<T> list = query.getResultList();
-        em.getTransaction().commit();
-        return list;
+        return query.getResultList();
     }
 
     @Override
@@ -85,6 +79,6 @@ public abstract class DaoImpl<T, R> implements DAO<T, R> {
 
     protected String getAllSqlString() {
 
-        return String.format("SELECT s FROM %s s", clazz.getSimpleName());
+        return String.format(GET_ALL_ENTITIES, clazz.getSimpleName());
     }
 }

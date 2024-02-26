@@ -3,6 +3,7 @@ package org.example.dao.impl;
 import org.example.dao.StudentDao;
 import org.example.pojo.Course;
 import org.example.pojo.Student;
+import org.example.pojo.Task;
 import org.hibernate.PropertyValueException;
 import org.hibernate.exception.ConstraintViolationException;
 
@@ -14,14 +15,16 @@ import java.util.List;
 
 public class StudentDaoImpl extends DaoImpl<Student, Long> implements StudentDao {
 
+    public static final String GET_STUDENT_BY_EMAIL = "SELECT s FROM Student s WHERE s.email='%s' AND s.id NOT LIKE '%d'";
+    public static final String GET_ALL_STUDENTS = "SELECT s FROM Student s WHERE s.id NOT LIKE '%d'";
+
     public StudentDaoImpl() {
 
         super(Student.class);
     }
 
     @Override
-    public Student create(Student student) throws ConstraintViolationException/*not unique email*/, PropertyValueException /*empty fields*/ {
-
+    public Student create(Student student) throws ConstraintViolationException, PropertyValueException {
         super.create(student);
         return student;
     }
@@ -49,26 +52,37 @@ public class StudentDaoImpl extends DaoImpl<Student, Long> implements StudentDao
     @Override
     public Student getByEmail(String email) throws NoResultException {
 
-        Student student;
-        String sqlQuery = String.format("SELECT s FROM Student s WHERE s.email='%s' AND s.id NOT LIKE '%d'",
+        String sqlQuery = String.format(GET_STUDENT_BY_EMAIL,
             email, StudentDao.DELETED_STUDENT_ID);
-        getEm().getTransaction().begin();
         TypedQuery<Student> query = getEm().createQuery(sqlQuery, Student.class);
-        student = query.getSingleResult();
-        getEm().getTransaction().commit();
-        return student;
+        return query.getSingleResult();
     }
 
     @Override
-    public List<Course> readAllByStudentId(Long studentId) throws NoResultException {
+    public List<Course> readAllCoursesByStudentId(Long studentId) throws NoResultException {
 
         Student student = read(studentId);
         return new ArrayList<>(student.getCourses());
     }
 
     @Override
+    public List<Task> readTasksByStudentId(Long studentId) throws NoResultException {
+
+        List<Task> taskList = new ArrayList<>();
+        List<Course> courses = readAllCoursesByStudentId(studentId);
+        courses.forEach(course -> taskList.addAll(course.getTasks()));
+        return taskList;
+    }
+
+    @Override
+    public List<Student> getAllStudentsByCourse(Course course) {
+
+        return new ArrayList<>(course.getStudents());
+    }
+
+    @Override
     protected String getAllSqlString() {
 
-        return String.format("SELECT s FROM Student s WHERE s.id NOT LIKE '%d'", StudentDao.DELETED_STUDENT_ID);
+        return String.format(GET_ALL_STUDENTS, StudentDao.DELETED_STUDENT_ID);
     }
 }

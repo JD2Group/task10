@@ -6,5 +6,5 @@ import javax.persistence.NoResultException;
 
 public interface ProfessorDao extends DAO<Professor, Long> {
 
-    Professor getByEmail(String oldEmail) throws NoResultException;
+    Professor getByEmail(String email) throws NoResultException;
 }

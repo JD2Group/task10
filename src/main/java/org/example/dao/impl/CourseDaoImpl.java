@@ -1,9 +1,7 @@
 package org.example.dao.impl;
 
 import org.example.dao.CourseDao;
-import org.example.dao.ProfessorDao;
 import org.example.pojo.Course;
-import org.example.pojo.Professor;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
@@ -12,6 +10,10 @@ import java.util.List;
 
 public class CourseDaoImpl extends DaoImpl<Course, Long> implements CourseDao {
 
+    public static final String GET_COURSE_BY_PROFESSOR_ID = "SELECT c FROM Course c WHERE c.professor=%d AND c.id NOT LIKE '%d'";
+    public static final String GET_COURSES_BY_TITLE_EMAIL = "SELECT c FROM Course c, Professor p WHERE c.title='%s' AND c.professor=p.id AND p.email='%s' AND c.id NOT LIKE '%d'";
+    public static final String GET_ALL_COURSES = "SELECT c FROM Course c WHERE c.id NOT LIKE '%d'";
+
     public CourseDaoImpl() {
         super(Course.class);
     }
@@ -19,7 +21,7 @@ public class CourseDaoImpl extends DaoImpl<Course, Long> implements CourseDao {
     @Override
     public void delete(Long id) throws EntityNotFoundException {
 
-        if (id != DELETED_COURSE_ID) {
+        if (DELETED_COURSE_ID != id) {
             Course course = super.read(id);
             Course deleted = super.read(DELETED_COURSE_ID);
             if (course != null) {
@@ -44,7 +46,7 @@ public class CourseDaoImpl extends DaoImpl<Course, Long> implements CourseDao {
     public List<Course> readAllByProfId(Long id) throws NoResultException {
 
         String sqlQuery = String
-                              .format("SELECT c FROM Course c WHERE c.professor=%d AND c.id NOT LIKE '%d'",
+                              .format(GET_COURSE_BY_PROFESSOR_ID,
                                   id, CourseDao.DELETED_COURSE_ID);
         return getCoursesBySqlQuery(sqlQuery);
     }
@@ -52,42 +54,22 @@ public class CourseDaoImpl extends DaoImpl<Course, Long> implements CourseDao {
     @Override
     public List<Course> getCourseByTitleAndEmail(String title, String profEmail) throws NoResultException {
 
-        ProfessorDao professorDao = new ProfessorDaoImpl();
-        Professor professor = professorDao.getByEmail(profEmail);
-        professorDao.closeManager();
-
         String sqlQuery = String
-                              .format("SELECT c FROM Course c WHERE c.title='%s' AND c.professor=%d AND c.id NOT LIKE '%d'",
-                                  title, professor.getId(), CourseDao.DELETED_COURSE_ID);
-
-        getEm().getTransaction().begin();
+                              .format(GET_COURSES_BY_TITLE_EMAIL,
+                                  title, profEmail, CourseDao.DELETED_COURSE_ID);
         TypedQuery<Course> query = getEm().createQuery(sqlQuery, Course.class);
-        List<Course> courses = query.getResultList();
-        getEm().getTransaction().commit();
-        return courses;
+        return query.getResultList();
     }
-
-   /* @Override
-    public List<Course> readAllByStudentId(Long studentId) throws NoResultException {
-
-        String sqlQuery = String
-                              .format("SELECT c FROM Course c, Student s WHERE c.student=s.course AND s.id=%d AND c.id NOT LIKE '%d'",
-                                  studentId, CourseDao.DELETED_COURSE_ID);
-        return getCoursesBySqlQuery(sqlQuery);
-    }*/
 
     @Override
     protected String getAllSqlString() {
 
-        return String.format("SELECT c FROM Course c WHERE c.id NOT LIKE '%d'", CourseDao.DELETED_COURSE_ID);
+        return String.format(GET_ALL_COURSES, CourseDao.DELETED_COURSE_ID);
     }
 
     private List<Course> getCoursesBySqlQuery(String sqlQuery) {
 
-        getEm().getTransaction().begin();
         TypedQuery<Course> query = getEm().createQuery(sqlQuery, Course.class);
-        List<Course> list = query.getResultList();
-        getEm().getTransaction().commit();
-        return list;
+        return query.getResultList();
     }
 }

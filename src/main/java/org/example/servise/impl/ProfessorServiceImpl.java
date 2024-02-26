@@ -1,14 +1,19 @@
 package org.example.servise.impl;
 
 import org.example.pojo.*;
-import org.example.servise.ProfessorServ;
+import org.example.servise.ProfessorService;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
-import java.util.ArrayList;
 import java.util.List;
 
-public class ProfessorServiceImpl extends ParrentService implements ProfessorServ {
+public class ProfessorServiceImpl extends ParrentService implements ProfessorService {
+
+    @Override
+    public Professor getProfessorByEmail(String email) {
+
+        return getProfessorDao().getByEmail(email);
+    }
 
     @Override
     public List<Course> getMyCourses(Professor professor) throws NoResultException {
@@ -25,13 +30,13 @@ public class ProfessorServiceImpl extends ParrentService implements ProfessorSer
     @Override
     public List<Student> getAllStudents(Course course) {
 
-        return new ArrayList<>(course.getStudents());
+        return getStudentDao().getAllStudentsByCourse(course);
     }
 
     @Override
     public Solution getSolution(Student student, Task task) throws EntityNotFoundException {
 
-        return getSolutionDao().getByStudentTask(student, task);
+        return getSolutionDao().getByStudentTask(student.getId(), task.getId());
     }
 
 
@@ -42,18 +47,22 @@ public class ProfessorServiceImpl extends ParrentService implements ProfessorSer
     }
 
     @Override
-    public void addTasks(Course course, Task task) {
+    public Task addTask(Course course, String title, String description) {
 
-        task.setCourse(course);
-        getTaskDao().update(task);
+        Task task = Task.builder()
+                        .title(title)
+                        .description(description)
+                        .course(course)
+                        .build();
+        return getTaskDao().update(task);
     }
 
     @Override
-    public void updateTask(Task task, String title, String description) {
+    public Task updateTask(Task task, String title, String description) {
 
         task.setTitle(title);
         task.setDescription(description);
-        getTaskDao().update(task);
+        return getTaskDao().update(task);
     }
 
     @Override

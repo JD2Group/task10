@@ -12,6 +12,8 @@ import javax.persistence.TypedQuery;
 public class ProfessorDaoImpl extends DaoImpl<Professor, Long> implements ProfessorDao {
 
 
+    public static final String GET_PROFESSOR_BY_EMAIL = "SELECT p FROM Professor p WHERE p.email='%s'";
+
     public ProfessorDaoImpl() {
 
         super(Professor.class);
@@ -43,14 +45,11 @@ public class ProfessorDaoImpl extends DaoImpl<Professor, Long> implements Profes
     }
 
     @Override
-    public Professor getByEmail(String oldEmail) throws NoResultException {
+    public Professor getByEmail(String email) throws NoResultException {
 
         String sqlQuery = String
-                              .format("SELECT p FROM Professor p WHERE p.email='%s'", oldEmail);
-        getEm().getTransaction().begin();
+                              .format(GET_PROFESSOR_BY_EMAIL, email);
         TypedQuery<Professor> query = getEm().createQuery(sqlQuery, Professor.class);
-        Professor professor = query.getSingleResult();
-        getEm().getTransaction().commit();
-        return professor;
+        return query.getSingleResult();
     }
 }
