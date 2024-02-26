@@ -16,10 +16,10 @@ public class AdminServiceImpl extends ParrentService implements AdminService {
     public Professor createProfessorAccount(String name, String surname, String email) {
 
         Professor professor = Professor.builder()
-                                  .name(name)
-                                  .surname(surname)
-                                  .email(email)
-                                  .build();
+                .name(name)
+                .surname(surname)
+                .email(email)
+                .build();
 
         return getProfessorDao().create(professor);
     }
@@ -28,10 +28,10 @@ public class AdminServiceImpl extends ParrentService implements AdminService {
     public Student createStudentAccount(String name, String surname, String email) {
 
         Student student = Student.builder()
-                              .name(name)
-                              .surname(surname)
-                              .email(email)
-                              .build();
+                .name(name)
+                .surname(surname)
+                .email(email)
+                .build();
         return getStudentDao().create(student);
     }
 
@@ -88,14 +88,13 @@ public class AdminServiceImpl extends ParrentService implements AdminService {
 
         return getCourseDao().readAllByProfId(professor.getId());
     }
-
     @Override
     public Course createCourse(String tittle, Professor professor) {
 
         Course course = Course.builder()
-                            .title(tittle)
-                            .professor(professor)
-                            .build();
+                .title(tittle)
+                .professor(professor)
+                .build();
         return getCourseDao().create(course);
     }
 
@@ -120,7 +119,7 @@ public class AdminServiceImpl extends ParrentService implements AdminService {
     }
 
     @Override
-    public List<Course> getCourseByTitleAndProfEmail(String title, String email) throws NoResultException {
+    public List<Course> getCoursesByTitleAndProfEmail(String title, String email)  {
 
         return getCourseDao().getCourseByTitleAndEmail(title, email);
     }

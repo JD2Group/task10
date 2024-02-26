@@ -9,7 +9,7 @@ import javax.persistence.TypedQuery;
 import java.util.List;
 
 public abstract class DaoImpl<T, R> implements DAO<T, R> {
-
+    public static final String GET_ALL_ENTITIES = "SELECT s FROM %s s";
     private final Class<T> clazz;
     private EntityManager em;
 

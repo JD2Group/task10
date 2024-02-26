@@ -3,6 +3,7 @@ package org.example.utils;
 import java.util.Random;
 
 public abstract class MockConstants {
+    public static final Long ID = -1L;
     public static final int MAX_RANDOM_NUMBER = 100;
     public static final Random RANDOM = new Random();
     public static final String COURSE_TITLE_PATTERN = "Course title No.";
@@ -31,7 +32,7 @@ public abstract class MockConstants {
     public static final String GET_NUMBER_OF_COURSES_QUERY = "select count(*) from courses where id <> 1";
     public static final String GET_NUMBER_OF_COURSES_BY_PROFESSOR_QUERY = "select count(*) from courses where professor_id = ?1";
     public static final String GET_NUMBER_OF_TASKS_BY_COURSE = "select count(*) from tasks where course_id = ?1";
-    public static final String GET_NUMBER_OF_TASKS_BY_STUDENT = "select count(*) from tasks where course_id IN (SELECT course_id from students_courses where student_id = 1?)";
+    public static final String GET_NUMBER_OF_TASKS_BY_STUDENT = "select count(*) from tasks where course_id IN (SELECT course_id from students_courses where student_id = ?1)";
     public static final String PROFESSOR_EMAIL = "professor email";
     public static final String IS_STUDENT_REGISTERED_FOR_COURSE_QUERY = "select exists(select * from students_courses where course_id = ?1 and student_id = ?2)";
 }
