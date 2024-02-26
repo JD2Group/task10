@@ -3,26 +3,19 @@ package org.example.servise.impl;
 import org.example.dao.*;
 import org.example.dao.impl.*;
 import org.example.pojo.*;
-import org.example.servise.AdminService;
 import org.example.servise.ProfessorService;
 import org.example.utils.MockUtils;
 import org.example.utils.QueryManager;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import java.util.ArrayList;
+import org.junit.jupiter.api.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.example.utils.MockConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ProfessorServiceImplTest {
+    private QueryManager queryManager = new QueryManager();
     private ProfessorService service = new ProfessorServiceImpl();
-    private AdminService adminService = new AdminServiceImpl();
     private Professor professor;
-    private List<Course> courses;
     private Course course;
     private Student student;
     private Task task;
@@ -30,31 +23,36 @@ class ProfessorServiceImplTest {
 
     @BeforeAll
     public static void createData() {
-        QueryManager.createTestData(PROFESSOR_EMAIL_PROFESSOR_TEST);
+        QueryManager queryManager = new QueryManager();
+        queryManager.createTestData(PROFESSOR_EMAIL);
+        queryManager.closeSession();
     }
 
     @AfterAll
     public static void deleteAll() {
-//        QueryManager.deleteAll();
+        QueryManager queryManager = new QueryManager();
+        queryManager.deleteAll();
+        queryManager.closeSession();
     }
 
     @BeforeEach
     public void getData() {
-        professor = adminService.getProfessorByEmail(PROFESSOR_EMAIL_PROFESSOR_TEST);
-        courses = adminService.getAllCourses(professor).stream()
-        .filter(c -> !c.getTasks().isEmpty())
-        .collect(Collectors.toList());
-        course = courses.get(RANDOM.nextInt(courses.size()));
-        List<Task> tasks = service.getAllTasks(course);
-        task = tasks.get(RANDOM.nextInt(tasks.size()));
-        List<Solution> solutions = new ArrayList<>(task.getSolutions());
+        List<Solution> solutions = queryManager.getList(GET_SOLUTIONS_QUERY, Solution.class);
         solution = solutions.get(RANDOM.nextInt(solutions.size()));
+        task = solution.getTask();
         student = solution.getStudent();
+        course = task.getCourse();
+        professor = course.getProfessor();
+    }
+
+    @AfterEach
+    public void closeQueryManager() {
+        queryManager.closeSession();
     }
 
     @Test
     void getMyCourses() {
-        int expected = QueryManager.getNumberOfObjects(GET_NUMBER_OF_COURSES_BY_PROFESSOR_QUERY, professor.getId());
+        int expected = queryManager.getNumberOfObjects(GET_NUMBER_OF_COURSES_BY_PROFESSOR_QUERY, professor.getId());
         List<Course> actual = service.getMyCourses(professor);
 
         assertEquals(expected, actual.size());
@@ -62,7 +60,7 @@ class ProfessorServiceImplTest {
 
     @Test
     void getAllTasks() {
-        int expected = QueryManager.getNumberOfObjects(GET_NUMBER_OF_TASKS_BY_COURSE, course.getId());
+        int expected = queryManager.getNumberOfObjects(GET_NUMBER_OF_TASKS_BY_COURSE, course.getId());
         List<Task> actual = service.getAllTasks(course);
 
         assertEquals(expected, actual.size());
@@ -70,7 +68,7 @@ class ProfessorServiceImplTest {
 
     @Test
     void getAllStudents() {
-        int expected = QueryManager.getNumberOfObjects(GET_NUMBER_OF_STUDENTS_BY_COURSE_QUERY, course.getId());
+        int expected = queryManager.getNumberOfObjects(GET_NUMBER_OF_STUDENTS_BY_COURSE_QUERY, course.getId());
         List<Student> actual = service.getAllStudents(course);
 
         assertEquals(expected, actual.size());
