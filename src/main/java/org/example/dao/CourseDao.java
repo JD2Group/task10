@@ -13,5 +13,5 @@ public interface CourseDao extends DAO<Course, Long> {
 
     List<Course> getCourseByTitleAndEmail(String title, String profEmail) throws NoResultException;
 
-    List<Course> readAllByStudentId(Long studentId) throws NoResultException;
+    /*List<Course> readAllByStudentId(Long studentId) throws NoResultException;*/
 }

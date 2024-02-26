@@ -67,14 +67,14 @@ public class CourseDaoImpl extends DaoImpl<Course, Long> implements CourseDao {
         return courses;
     }
 
-    @Override
+   /* @Override
     public List<Course> readAllByStudentId(Long studentId) throws NoResultException {
 
         String sqlQuery = String
-                              .format("SELECT c FROM Course c WHERE c.student=%d AND c.id NOT LIKE '%d'",
+                              .format("SELECT c FROM Course c, Student s WHERE c.student=s.course AND s.id=%d AND c.id NOT LIKE '%d'",
                                   studentId, CourseDao.DELETED_COURSE_ID);
         return getCoursesBySqlQuery(sqlQuery);
-    }
+    }*/
 
     @Override
     protected String getAllSqlString() {

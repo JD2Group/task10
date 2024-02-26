@@ -1,6 +1,7 @@
 package org.example.dao.impl;
 
 import org.example.dao.StudentDao;
+import org.example.pojo.Course;
 import org.example.pojo.Student;
 import org.hibernate.PropertyValueException;
 import org.hibernate.exception.ConstraintViolationException;
@@ -8,6 +9,8 @@ import org.hibernate.exception.ConstraintViolationException;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StudentDaoImpl extends DaoImpl<Student, Long> implements StudentDao {
 
@@ -54,6 +57,13 @@ public class StudentDaoImpl extends DaoImpl<Student, Long> implements StudentDao
         student = query.getSingleResult();
         getEm().getTransaction().commit();
         return student;
+    }
+
+    @Override
+    public List<Course> readAllByStudentId(Long studentId) throws NoResultException {
+
+        Student student = read(studentId);
+        return new ArrayList<>(student.getCourses());
     }
 
     @Override
