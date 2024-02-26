@@ -4,6 +4,8 @@ import org.example.pojo.Course;
 import org.example.pojo.Professor;
 import org.example.pojo.Student;
 import org.example.servise.AdminService;
+import org.hibernate.PropertyValueException;
+import org.hibernate.exception.ConstraintViolationException;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
@@ -13,7 +15,7 @@ import java.util.List;
 public class AdminServiceImpl extends ParrentService implements AdminService {
 
     @Override
-    public Professor createProfessorAccount(String name, String surname, String email) {
+    public Professor createProfessorAccount(String name, String surname, String email) throws ConstraintViolationException, PropertyValueException {
 
         Professor professor = Professor.builder()
                                   .name(name)
@@ -25,7 +27,7 @@ public class AdminServiceImpl extends ParrentService implements AdminService {
     }
 
     @Override
-    public Student createStudentAccount(String name, String surname, String email) {
+    public Student createStudentAccount(String name, String surname, String email) throws ConstraintViolationException, PropertyValueException {
 
         Student student = Student.builder()
                               .name(name)
@@ -36,13 +38,13 @@ public class AdminServiceImpl extends ParrentService implements AdminService {
     }
 
     @Override
-    public Professor getProfessorByEmail(String email) {
+    public Professor getProfessorByEmail(String email) throws NoResultException {
 
         return getProfessorDao().getByEmail(email);
     }
 
     @Override
-    public Student getStudentByEmail(String email) {
+    public Student getStudentByEmail(String email) throws NoResultException {
 
         return getStudentDao().getByEmail(email);
     }
@@ -102,21 +104,27 @@ public class AdminServiceImpl extends ParrentService implements AdminService {
     @Override
     public void updateCourse(Course course, Professor professor) {
 
-        course.setProfessor(professor);
-        getCourseDao().update(course);
+        if (course != null) {
+            course.setProfessor(professor);
+            getCourseDao().update(course);
+        }
     }
 
     @Override
     public void updateCourse(Course course, String tittle) {
 
-        course.setTitle(tittle);
-        getCourseDao().update(course);
+        if (course != null) {
+            course.setTitle(tittle);
+            getCourseDao().update(course);
+        }
     }
 
     @Override
     public void deleteCourse(Course course) throws EntityNotFoundException {
 
-        getCourseDao().delete(course.getId());
+        if (course != null) {
+            getCourseDao().delete(course.getId());
+        }
     }
 
     @Override

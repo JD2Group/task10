@@ -21,19 +21,21 @@ public class TaskDaoImpl extends DaoImpl<Task, Long> implements TaskDao {
     @Override
     public void delete(Long id) throws EntityNotFoundException {
 
-        if (DELETED_TASK_ID != id) {
-            Task task = super.read(id);
-            Task deleted = super.read(DELETED_TASK_ID);
-            if (task != null) {
-                getEm().getTransaction().begin();
-                getEm().refresh(task);
-                task.getSolutions().stream()
-                    .peek(solution -> solution.setTask(deleted))
-                    .forEach(getEm()::merge);
-                getEm().remove(task);
-                getEm().getTransaction().commit();
-            } else {
-                throw new EntityNotFoundException();
+        if (id != null) {
+            if (!TaskDao.DELETED_TASK_ID.equals(id)) {
+                Task task = super.read(id);
+                Task deleted = super.read(DELETED_TASK_ID);
+                if (task != null) {
+                    getEm().getTransaction().begin();
+                    getEm().refresh(task);
+                    task.getSolutions().stream()
+                        .peek(solution -> solution.setTask(deleted))
+                        .forEach(getEm()::merge);
+                    getEm().remove(task);
+                    getEm().getTransaction().commit();
+                } else {
+                    throw new EntityNotFoundException();
+                }
             }
         }
     }

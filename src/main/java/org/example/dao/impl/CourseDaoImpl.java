@@ -6,6 +6,7 @@ import org.example.pojo.Course;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CourseDaoImpl extends DaoImpl<Course, Long> implements CourseDao {
@@ -21,7 +22,7 @@ public class CourseDaoImpl extends DaoImpl<Course, Long> implements CourseDao {
     @Override
     public void delete(Long id) throws EntityNotFoundException {
 
-        if (DELETED_COURSE_ID != id) {
+        if (id != null && DELETED_COURSE_ID != id) {
             Course course = super.read(id);
             Course deleted = super.read(DELETED_COURSE_ID);
             if (course != null) {
@@ -39,16 +40,21 @@ public class CourseDaoImpl extends DaoImpl<Course, Long> implements CourseDao {
             } else {
                 throw new EntityNotFoundException();
             }
+
         }
     }
 
     @Override
     public List<Course> readAllByProfId(Long id) throws NoResultException {
 
-        String sqlQuery = String
-                              .format(GET_COURSE_BY_PROFESSOR_ID,
-                                  id, CourseDao.DELETED_COURSE_ID);
-        return getCoursesBySqlQuery(sqlQuery);
+        List<Course> list = new ArrayList<>();
+        if (id != null) {
+            String sqlQuery = String
+                                  .format(GET_COURSE_BY_PROFESSOR_ID,
+                                      id, CourseDao.DELETED_COURSE_ID);
+            list = getCoursesBySqlQuery(sqlQuery);
+        }
+        return list;
     }
 
     @Override
