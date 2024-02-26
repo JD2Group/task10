@@ -1,18 +1,23 @@
 package org.example.servise.impl;
 
-import org.example.pojo.Course;
-import org.example.pojo.Professor;
-import org.example.pojo.Student;
+import org.example.dao.CourseDao;
+import org.example.dao.SolutionDao;
+import org.example.dao.StudentDao;
+import org.example.dao.TaskDao;
+import org.example.dao.impl.CourseDaoImpl;
+import org.example.dao.impl.SolutionDaoImpl;
+import org.example.dao.impl.StudentDaoImpl;
+import org.example.dao.impl.TaskDaoImpl;
+import org.example.pojo.*;
 import org.example.servise.AdminService;
 import org.example.utils.MockUtils;
 import org.example.utils.QueryManager;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.example.utils.MockConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -76,6 +81,9 @@ class AdminServiceImplTest {
         service.deleteAccount(student);
 
         assertThrows(NoResultException.class, () -> service.getStudentByEmail(email));
+        Student studentForDelete = MockUtils.generateStudent();
+        studentForDelete.setId(ID);
+        assertThrows(EntityNotFoundException.class, () -> service.deleteAccount(studentForDelete));
     }
 
     @Test
@@ -86,6 +94,9 @@ class AdminServiceImplTest {
         service.deleteAccount(professor);
 
         assertThrows(NoResultException.class, () -> service.getProfessorByEmail(email));
+        Professor professorForDelete = MockUtils.generateProfessor();
+        professorForDelete.setId(ID);
+        assertThrows(EntityNotFoundException.class, () -> service.deleteAccount(professorForDelete));
     }
 
     @Test
@@ -164,11 +175,38 @@ class AdminServiceImplTest {
 
     @Test
     void deleteCourse() {
+        CourseDao courseDao = new CourseDaoImpl();
         List<Course> courses = service.getAllCourses();
         Course course = courses.get(RANDOM.nextInt(courses.size()));
         service.deleteCourse(course);
-        List<Course> actual = service.getCoursesByTitleAndProfEmail(course.getTitle(), course.getProfessor().getEmail());
+        Course actual = courseDao.read(course.getId());
+
+        assertNull(actual);
+        courseDao.closeManager();
+        assertThrows(EntityNotFoundException.class, () -> service.deleteCourse(course));
+    }
+
+    @Test
+    void clearSolutions() {
+        SolutionDao solutionDao = new SolutionDaoImpl();
+        StudentDao studentDao = new StudentDaoImpl();
+        TaskDao taskDao = new TaskDaoImpl();
+        List<Solution> solutions = solutionDao.readAll();
+        solutions.stream()
+                .map(Solution::getStudent)
+                .distinct()
+                .forEach(s -> studentDao.delete(s.getId()));
+        solutions.stream()
+                .map(Solution::getTask)
+                .distinct()
+                .forEach(t -> taskDao.delete(t.getId()));
+        service.clearBaseFromSolutionsWithoutStudentIdAndTaskId();
+        List<Solution> actual = solutionDao.readAll();
 
         assertTrue(actual.isEmpty());
+        solutionDao.closeManager();
+        studentDao.closeManager();
+        taskDao.closeManager();
     }
+
 }

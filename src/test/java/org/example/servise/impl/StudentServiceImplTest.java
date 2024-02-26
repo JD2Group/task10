@@ -12,6 +12,7 @@ import org.example.excepion.Exceptions;
 import org.example.pojo.*;
 import org.example.servise.ProfessorService;
 import org.example.servise.StudentService;
+import org.example.utils.MockUtils;
 import org.example.utils.QueryManager;
 import org.junit.jupiter.api.*;
 
@@ -64,7 +65,7 @@ class StudentServiceImplTest {
 
     @Test
     void getByEmail() {
-        Student actual = service.getByEmail(student.getEmail());
+        Student actual = service.getStudentByEmail(student.getEmail());
 
         assertEquals(student, actual);
     }
@@ -80,7 +81,7 @@ class StudentServiceImplTest {
 
     @Test
     void getMyCourses() {
-        int expected = studentDao.readAllByStudentId(student.getId()).size();
+        int expected = studentDao.readAllCoursesByStudentId(student.getId()).size();
         List<Course> actual = service.getMyCourses(student);
 
         assertEquals(expected, actual.size());
@@ -98,7 +99,7 @@ class StudentServiceImplTest {
 
     @Test
     void checkInCourse() {
-        List<Course> courses = studentDao.readAllByStudentId(student.getId());
+        List<Course> courses = studentDao.readAllCoursesByStudentId(student.getId());
         Course course = courses.get(RANDOM.nextInt(courses.size()));
         service.checkInCourse(course, student);
         int expected = 1;
@@ -109,7 +110,7 @@ class StudentServiceImplTest {
 
     @Test
     void checkOutCourse() {
-        List<Course> courses = studentDao.readAllByStudentId(student.getId());
+        List<Course> courses = studentDao.readAllCoursesByStudentId(student.getId());
         Course course = courses.get(RANDOM.nextInt(courses.size()));
         service.checkOutCourse(course, student);
         int expected = 0;
@@ -120,7 +121,7 @@ class StudentServiceImplTest {
 
     @Test
     void getTasksFromCourse() {
-        List<Course> courses = studentDao.readAllByStudentId(student.getId());
+        List<Course> courses = studentDao.readAllCoursesByStudentId(student.getId());
         Course course = courses.get(RANDOM.nextInt(courses.size()));
         List<Task> expected = taskDao.readAllByCourseId(course.getId());
         List<Task> actual = service.getTasksFromCourse(course);
@@ -138,7 +139,9 @@ class StudentServiceImplTest {
 
         assertEquals(expected, actual);
 
-        Solution newSolution = service.getSolution(task, student);
+        Student newStudent = MockUtils.generateStudent();
+        studentDao.create(newStudent);
+        Solution newSolution = service.getSolution(task, newStudent);
         assertNotNull(newSolution);
     }
 

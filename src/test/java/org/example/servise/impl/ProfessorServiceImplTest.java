@@ -57,6 +57,16 @@ class ProfessorServiceImplTest {
     }
 
     @Test
+    void getProfessorByEmail() {
+        ProfessorDao professorDao = new ProfessorDaoImpl();
+        Professor expected = MockUtils.generateProfessor();
+        professorDao.create(expected);
+        Professor actual = service.getProfessorByEmail(expected.getEmail());
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     void getMyCourses() {
         Professor professor = adminService.getProfessorByEmail(PROFESSOR_EMAIL);
         int expected = queryManager.getNumberOfObjects(GET_NUMBER_OF_COURSES_BY_PROFESSOR_QUERY, professor.getId());
@@ -108,16 +118,16 @@ class ProfessorServiceImplTest {
         assertEquals(expected, actual);
     }
 
-//    @Test
-//    void addTasks() {
-//        List<Course> courses = courseDao.readAll();
-//        Course course = courses.get(RANDOM.nextInt(courses.size()));
-//        Task expected = MockUtils.generateTask();
-////        expected = service.addTasks(course, expected);
-//        List<Task> actual = service.getAllTasks(course);
-//
-//        assertTrue(actual.contains(expected));
-//    }
+    @Test
+    void addTasks() {
+        List<Course> courses = courseDao.readAll();
+        Course course = courses.get(RANDOM.nextInt(courses.size()));
+        Task expected = MockUtils.generateTask();
+        expected = service.addTask(course, expected.getTitle(), expected.getDescription());
+        List<Task> actual = service.getAllTasks(course);
+
+        assertTrue(actual.contains(expected));
+    }
 
     @Test
     void updateTask() {
@@ -138,8 +148,7 @@ class ProfessorServiceImplTest {
         List<Task> actual = service.getAllTasks(task.getCourse());
 
         assertFalse(actual.contains(task));
-        Task taskForDelete = taskDao.read(1L);
-        assertThrows(EntityNotFoundException.class, () -> service.deleteTask(taskForDelete));
+        assertThrows(EntityNotFoundException.class, () -> taskDao.delete(ID));
     }
 
     @Test
