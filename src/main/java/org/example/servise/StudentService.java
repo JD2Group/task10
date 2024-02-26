@@ -9,9 +9,9 @@ import org.example.pojo.Task;
 import javax.persistence.NoResultException;
 import java.util.List;
 
-public interface StudentServ {
+public interface StudentService {
 
-    Student getByEmail(String Email);
+    Student getStudentByEmail(String Email);
 
     List<Course> getAllCourses();
 
