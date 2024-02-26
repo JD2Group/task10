@@ -6,7 +6,7 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,7 +30,7 @@ public class Task implements Serializable {
 
     @Column(updatable = false)
     @CreationTimestamp
-    private LocalDateTime createdDate;
+    private Timestamp createdDate;
 
     @Column
     @Type(type = "text")
