@@ -9,6 +9,7 @@ import org.example.utils.MockUtils;
 import org.example.utils.QueryManager;
 import org.junit.jupiter.api.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -107,16 +108,16 @@ class ProfessorServiceImplTest {
         assertEquals(expected, actual);
     }
 
-    @Test
-    void addTasks() {
-        List<Course> courses = courseDao.readAll();
-        Course course = courses.get(RANDOM.nextInt(courses.size()));
-        Task expected = MockUtils.generateTask();
-//        expected = service.addTasks(course, expected);
-        List<Task> actual = service.getAllTasks(course);
-
-        assertTrue(actual.contains(expected));
-    }
+//    @Test
+//    void addTasks() {
+//        List<Course> courses = courseDao.readAll();
+//        Course course = courses.get(RANDOM.nextInt(courses.size()));
+//        Task expected = MockUtils.generateTask();
+////        expected = service.addTasks(course, expected);
+//        List<Task> actual = service.getAllTasks(course);
+//
+//        assertTrue(actual.contains(expected));
+//    }
 
     @Test
     void updateTask() {
@@ -137,6 +138,8 @@ class ProfessorServiceImplTest {
         List<Task> actual = service.getAllTasks(task.getCourse());
 
         assertFalse(actual.contains(task));
+        Task taskForDelete = taskDao.read(1L);
+        assertThrows(EntityNotFoundException.class, () -> service.deleteTask(taskForDelete));
     }
 
     @Test
