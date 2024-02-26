@@ -11,31 +11,31 @@ import static org.example.utils.MockConstants.*;
 public abstract class MockUtils {
 
     public static List<Course> generateRandomCourses() {
-        return IntStream.range(0, MAX_LIST_SIZE)
+        return IntStream.range(0, LIST_SIZE)
                 .mapToObj(i -> MockUtils.generateCourse())
                 .collect(Collectors.toList());
     }
 
     public static List<Professor> generateRandomProfessors() {
-        return IntStream.range(0, MAX_LIST_SIZE)
+        return IntStream.range(0, LIST_SIZE)
                 .mapToObj(i -> MockUtils.generateProfessor())
                 .collect(Collectors.toList());
     }
 
     public static List<Student> generateRandomStudents() {
-        return IntStream.range(0, MAX_LIST_SIZE)
+        return IntStream.range(0, LIST_SIZE)
                 .mapToObj(i -> MockUtils.generateStudent())
                 .collect(Collectors.toList());
     }
 
     public static List<Task> generateRandomTasks() {
-        return IntStream.range(0, MAX_LIST_SIZE)
+        return IntStream.range(0, LIST_SIZE)
                 .mapToObj(i -> MockUtils.generateTask())
                 .collect(Collectors.toList());
     }
 
     public static List<Solution> generateRandomSolutions() {
-        return IntStream.range(0, MAX_LIST_SIZE)
+        return IntStream.range(0, LIST_SIZE)
                 .mapToObj(i -> MockUtils.generateSolution())
                 .collect(Collectors.toList());
     }

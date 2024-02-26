@@ -17,7 +17,6 @@ import org.junit.jupiter.api.*;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.example.utils.MockConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -164,11 +163,13 @@ class AdminServiceImplTest {
 
     @Test
     void updateCourseProfessor() {
+        CourseDao courseDao = new CourseDaoImpl();
         List<Course> courses = service.getAllCourses();
         Course course = courses.get(RANDOM.nextInt(courses.size()));
         Professor expected = service.createProfessorAccount(PROFESSOR_NAME_PATTERN, PROFESSOR_SURNAME_PATTERN, PROFESSOR_EMAIL_PATTERN);
         service.updateCourse(course, expected);
-        Professor actual = service.getCoursesByTitleAndProfEmail(course.getTitle(), course.getProfessor().getEmail()).get(0).getProfessor();
+        Course courseAfterUpdate = courseDao.read(course.getId());
+        Professor actual = courseAfterUpdate.getProfessor();
 
         assertEquals(expected, actual);
     }
@@ -176,8 +177,7 @@ class AdminServiceImplTest {
     @Test
     void deleteCourse() {
         CourseDao courseDao = new CourseDaoImpl();
-        List<Course> courses = service.getAllCourses();
-        Course course = courses.get(RANDOM.nextInt(courses.size()));
+        Course course = service.createCourse(COURSE_TITLE_PATTERN + RANDOM.nextInt(), service.getProfessorByEmail(PROFESSOR_EMAIL));
         service.deleteCourse(course);
         Course actual = courseDao.read(course.getId());
 
