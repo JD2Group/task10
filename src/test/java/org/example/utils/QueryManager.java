@@ -8,7 +8,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import java.math.BigInteger;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -46,17 +45,15 @@ public class QueryManager {
             studentDao.create(s);
         });
 
-        IntStream.range(0, LIST_SIZE).forEach(i -> {
-            MockUtils.generateRandomTasks().forEach(t -> {
-                        t.setCourse(courses.get(i));
-                        taskDao.create(t);
-                        Solution solution = MockUtils.generateSolution();
-                        solution.setTask(t);
-                        solution.setStudent(students.get(i));
-                        solution.setReadyForReview(i % 2 == 0);
-                        solutionDao.create(solution);
-                    });
-                });
+        IntStream.range(0, LIST_SIZE).forEach(i -> MockUtils.generateRandomTasks().forEach(t -> {
+                    t.setCourse(courses.get(i));
+                    taskDao.create(t);
+                    Solution solution = MockUtils.generateSolution();
+                    solution.setTask(t);
+                    solution.setStudent(students.get(i));
+                    solution.setReadyForReview(i % 2 == 0);
+                    solutionDao.create(solution);
+                }));
 
         professorDao.closeManager();
         courseDao.closeManager();
