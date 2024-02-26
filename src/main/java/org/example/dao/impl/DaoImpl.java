@@ -23,15 +23,17 @@ public abstract class DaoImpl<T, R> implements DAO<T, R> {
     @Override
     public T create(T object) {
 
-        em.getTransaction().begin();
-        em.persist(object);
-        em.getTransaction().commit();
+        if (object != null) {
+            em.getTransaction().begin();
+            em.persist(object);
+            em.getTransaction().commit();
+        }
         return object;
     }
 
     @Override
     public T read(R id) throws EntityNotFoundException {
-        
+
         return em.find(clazz, id);
     }
 
@@ -48,10 +50,12 @@ public abstract class DaoImpl<T, R> implements DAO<T, R> {
     @Override
     public void delete(R id) throws EntityNotFoundException {
 
-        em.getTransaction().begin();
-        Object rootEntity = em.getReference(clazz, id);
-        em.remove(rootEntity);
-        em.getTransaction().commit();
+        if (id != null) {
+            em.getTransaction().begin();
+            Object rootEntity = em.getReference(clazz, id);
+            em.remove(rootEntity);
+            em.getTransaction().commit();
+        }
     }
 
     @Override

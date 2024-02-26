@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface TaskDao extends DAO<Task, Long> {
 
-    long DELETED_TASK_ID = 1L;
+    Long DELETED_TASK_ID = 1L;
 
     List<Task> readAllByCourseId(Long courseId) throws NoResultException;
 }

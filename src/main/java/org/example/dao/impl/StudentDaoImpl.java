@@ -25,26 +25,28 @@ public class StudentDaoImpl extends DaoImpl<Student, Long> implements StudentDao
 
     @Override
     public Student create(Student student) throws ConstraintViolationException, PropertyValueException {
-        super.create(student);
-        return student;
+
+        return super.create(student);
     }
 
     @Override
     public void delete(Long id) throws EntityNotFoundException {
 
-        if (!id.equals(StudentDao.DELETED_STUDENT_ID)) {
-            Student student = super.read(id);
-            Student deleted = super.read(StudentDao.DELETED_STUDENT_ID);
-            if (student != null) {
-                getEm().getTransaction().begin();
-                getEm().refresh(student);
-                student.getSolutions().stream()
-                    .peek(solution -> solution.setStudent(deleted))
-                    .forEach(getEm()::merge);
-                getEm().remove(student);
-                getEm().getTransaction().commit();
-            } else {
-                throw new EntityNotFoundException();
+        if (id != null) {
+            if (!StudentDao.DELETED_STUDENT_ID.equals(id)) {
+                Student student = super.read(id);
+                Student deleted = super.read(StudentDao.DELETED_STUDENT_ID);
+                if (student != null) {
+                    getEm().getTransaction().begin();
+                    getEm().refresh(student);
+                    student.getSolutions().stream()
+                        .peek(solution -> solution.setStudent(deleted))
+                        .forEach(getEm()::merge);
+                    getEm().remove(student);
+                    getEm().getTransaction().commit();
+                } else {
+                    throw new EntityNotFoundException();
+                }
             }
         }
     }
@@ -59,26 +61,39 @@ public class StudentDaoImpl extends DaoImpl<Student, Long> implements StudentDao
     }
 
     @Override
-    public List<Course> readAllCoursesByStudentId(Long studentId) throws NoResultException {
+    public List<Course> readAllCoursesByStudentId(Long studentId) throws EntityNotFoundException {
 
-        Student student = read(studentId);
-        return new ArrayList<>(student.getCourses());
+        List<Course> list = new ArrayList<>();
+        if (studentId != null) {
+            Student student = read(studentId);
+            list.addAll(student.getCourses());
+        }
+        return list;
     }
 
     @Override
     public List<Task> readTasksByStudentId(Long studentId) throws NoResultException {
 
         List<Task> taskList = new ArrayList<>();
-        List<Course> courses = readAllCoursesByStudentId(studentId);
-        courses.forEach(course -> taskList.addAll(course.getTasks()));
-        return taskList;
+        if (studentId != null) {
+            List<Course> courses = readAllCoursesByStudentId(studentId);
+            courses.forEach(course -> taskList.addAll(course.getTasks()));
+            return taskList;
+        } else {
+            throw new NoResultException();
+        }
     }
 
     @Override
     public List<Student> getAllStudentsByCourse(Course course) {
 
-        return new ArrayList<>(course.getStudents());
+        if (course != null) {
+            return new ArrayList<>(course.getStudents());
+        } else {
+            throw new NoResultException();
+        }
     }
+
 
     @Override
     protected String getAllSqlString() {

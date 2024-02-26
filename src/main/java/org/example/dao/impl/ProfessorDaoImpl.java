@@ -20,27 +20,28 @@ public class ProfessorDaoImpl extends DaoImpl<Professor, Long> implements Profes
     }
 
     @Override
-    public Professor create(Professor professor) throws ConstraintViolationException/*not unique email*/, PropertyValueException /*empty fields*/ {
+    public Professor create(Professor professor) throws ConstraintViolationException, PropertyValueException {
 
-        super.create(professor);
-        return professor;
+        return super.create(professor);
     }
 
     @Override
     public void delete(Long id) throws EntityNotFoundException {
 
-        Professor professor = super.read(id);
-        if (professor != null) {
-            getEm().refresh(professor);
-            getEm().getTransaction().begin();
-            professor.getCourses().stream()
-                .peek(course -> course.setProfessor(null))
-                .forEach(getEm()::merge);
-            getEm().flush();
-            getEm().remove(professor);
-            getEm().getTransaction().commit();
-        } else {
-            throw new EntityNotFoundException();
+        if (id != null) {
+            Professor professor = super.read(id);
+            if (professor != null) {
+                getEm().refresh(professor);
+                getEm().getTransaction().begin();
+                professor.getCourses().stream()
+                    .peek(course -> course.setProfessor(null))
+                    .forEach(getEm()::merge);
+                getEm().flush();
+                getEm().remove(professor);
+                getEm().getTransaction().commit();
+            } else {
+                throw new EntityNotFoundException();
+            }
         }
     }
 

@@ -10,7 +10,7 @@ import java.util.List;
 public class ProfessorServiceImpl extends ParrentService implements ProfessorService {
 
     @Override
-    public Professor getProfessorByEmail(String email) {
+    public Professor getProfessorByEmail(String email) throws NoResultException {
 
         return getProfessorDao().getByEmail(email);
     }
@@ -18,64 +18,98 @@ public class ProfessorServiceImpl extends ParrentService implements ProfessorSer
     @Override
     public List<Course> getMyCourses(Professor professor) throws NoResultException {
 
-        return getCourseDao().readAllByProfId(professor.getId());
+        if (professor != null) {
+            return getCourseDao().readAllByProfId(professor.getId());
+        } else {
+            throw new NoResultException();
+        }
     }
 
     @Override
-    public List<Task> getAllTasks(Course course) throws NoResultException {
+    public List<Task> getAllTasks(Course course) throws EntityNotFoundException {
 
-        return getTaskDao().readAllByCourseId(course.getId());
+        if (course != null) {
+            return getTaskDao().readAllByCourseId(course.getId());
+        } else {
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override
-    public List<Student> getAllStudents(Course course) {
+    public List<Student> getAllStudents(Course course) throws EntityNotFoundException {
 
-        return getStudentDao().getAllStudentsByCourse(course);
+        if (course != null) {
+            return getStudentDao().getAllStudentsByCourse(course);
+        } else {
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override
-    public Solution getSolution(Student student, Task task) throws EntityNotFoundException {
+    public Solution getSolution(Student student, Task task) throws NoResultException {
 
-        return getSolutionDao().getByStudentTask(student.getId(), task.getId());
+        if (student != null && task != null) {
+            return getSolutionDao().getByStudentTask(student.getId(), task.getId());
+        } else {
+            throw new NoResultException();
+        }
     }
 
 
     @Override
-    public List<Solution> getAllReadySolutions(Task task) {
+    public List<Solution> getAllReadySolutions(Task task) throws EntityNotFoundException {
 
-        return getSolutionDao().getAllReadyByTask(task);
+        if (task != null) {
+            return getSolutionDao().getAllReadyByTask(task);
+        } else {
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override
-    public Task addTask(Course course, String title, String description) {
+    public Task addTask(Course course, String title, String description) throws EntityNotFoundException {
 
-        Task task = Task.builder()
-                        .title(title)
-                        .description(description)
-                        .course(course)
-                        .build();
-        return getTaskDao().update(task);
+        if (course != null) {
+            Task task = Task.builder()
+                            .title(title)
+                            .description(description)
+                            .course(course)
+                            .build();
+            return getTaskDao().update(task);
+        } else {
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override
-    public Task updateTask(Task task, String title, String description) {
+    public Task updateTask(Task task, String title, String description) throws EntityNotFoundException {
 
-        task.setTitle(title);
-        task.setDescription(description);
-        return getTaskDao().update(task);
+        if (task != null) {
+            task.setTitle(title);
+            task.setDescription(description);
+            return getTaskDao().update(task);
+        } else {
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override
     public void deleteTask(Task task) throws EntityNotFoundException {
 
-        getTaskDao().delete(task.getId());
+        if (task != null) {
+            getTaskDao().delete(task.getId());
+        }
     }
 
     @Override
-    public void review(Solution solution, Integer mark, String review) {
+    public void review(Solution solution, Integer mark, String review) throws EntityNotFoundException {
 
-        solution.setMark(mark);
-        solution.setReview(review);
-        getSolutionDao().update(solution);
+        if (solution != null) {
+            solution.setMark(mark);
+            solution.setReview(review);
+            getSolutionDao().update(solution);
+        } else {
+            throw new EntityNotFoundException();
+        }
     }
 }
