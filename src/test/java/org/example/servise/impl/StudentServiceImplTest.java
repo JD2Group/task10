@@ -9,10 +9,8 @@ import org.example.dao.impl.SolutionDaoImpl;
 import org.example.dao.impl.StudentDaoImpl;
 import org.example.dao.impl.TaskDaoImpl;
 import org.example.excepion.Exceptions;
-import org.example.pojo.Course;
-import org.example.pojo.Solution;
-import org.example.pojo.Student;
-import org.example.pojo.Task;
+import org.example.pojo.*;
+import org.example.servise.ProfessorService;
 import org.example.servise.StudentService;
 import org.example.utils.QueryManager;
 import org.junit.jupiter.api.*;
@@ -20,8 +18,7 @@ import org.junit.jupiter.api.*;
 import java.util.List;
 
 import static org.example.utils.MockConstants.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class StudentServiceImplTest {
     private QueryManager queryManager = new QueryManager();
@@ -75,10 +72,11 @@ class StudentServiceImplTest {
     @Test
     void getAllCourses() {
         int expected = queryManager.getNumberOfObjects(GET_NUMBER_OF_COURSES_QUERY);
-        List<Course> actual = courseDao.readAll();
+        List<Course> actual = service.getAllCourses();
 
         assertEquals(expected, actual.size());
     }
+
 
     @Test
     void getMyCourses() {
@@ -86,6 +84,16 @@ class StudentServiceImplTest {
         List<Course> actual = service.getMyCourses(student);
 
         assertEquals(expected, actual.size());
+    }
+
+    @Test
+    void getAllMyTasks() {
+        List<Student> students = studentDao.readAll();
+        Student student = students.get(RANDOM.nextInt(students.size()));
+        int expected = queryManager.getNumberOfObjects(GET_NUMBER_OF_TASKS_BY_STUDENT, student.getId());
+        int actual = service.getAllMyTasks(student).size();
+
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -129,6 +137,9 @@ class StudentServiceImplTest {
         Solution actual = service.getSolution(task, student);
 
         assertEquals(expected, actual);
+
+        Solution newSolution = service.getSolution(task, student);
+        assertNotNull(newSolution);
     }
 
     @Test
@@ -143,5 +154,10 @@ class StudentServiceImplTest {
         Solution actual = service.getSolution(solution.getTask(), solution.getStudent());
 
         assertEquals(UPDATE, actual.getResponse());
+
+        ProfessorService professorService = new ProfessorServiceImpl();
+        professorService.review(solution, MARK, REVIEW);
+
+        assertThrows(Exceptions.SolutionIsResolvedException.class, () -> service.solveTask(solution, true, UPDATE));
     }
 }
