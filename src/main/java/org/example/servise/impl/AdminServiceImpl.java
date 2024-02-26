@@ -3,14 +3,14 @@ package org.example.servise.impl;
 import org.example.pojo.Course;
 import org.example.pojo.Professor;
 import org.example.pojo.Student;
-import org.example.servise.AdministratorServ;
+import org.example.servise.AdminService;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdministratorServiceImpl extends ParrentService implements AdministratorServ {
+public class AdminServiceImpl extends ParrentService implements AdminService {
 
     @Override
     public Professor createProfessorAccount(String name, String surname, String email) {
@@ -117,5 +117,17 @@ public class AdministratorServiceImpl extends ParrentService implements Administ
     public void deleteCourse(Course course) throws EntityNotFoundException {
 
         getCourseDao().delete(course.getId());
+    }
+
+    @Override
+    public List<Course> getCourseByTitleAndProfEmail(String title, String email) throws NoResultException {
+
+        return getCourseDao().getCourseByTitleAndEmail(title, email);
+    }
+
+    @Override
+    public void clearBaseFromSolutionsWithoutStudentIdAndTaskId() {
+
+        getSolutionDao().deleteSolutionsWithoutStudentIdAndTaskId();
     }
 }

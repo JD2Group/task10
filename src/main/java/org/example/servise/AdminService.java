@@ -6,7 +6,7 @@ import org.example.pojo.Student;
 
 import java.util.List;
 
-public interface AdministratorServ {
+public interface AdminService {
 
 
     Professor createProfessorAccount(String name, String surname, String email);
@@ -39,4 +39,6 @@ public interface AdministratorServ {
     void updateCourse(Course course, String tittle);
 
     void deleteCourse(Course course);
+
+    void clearBaseFromSolutionsWithoutStudentIdAndTaskId();
 }

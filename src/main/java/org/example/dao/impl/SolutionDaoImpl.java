@@ -1,15 +1,19 @@
 package org.example.dao.impl;
 
 import org.example.dao.SolutionDao;
+import org.example.dao.StudentDao;
+import org.example.dao.TaskDao;
 import org.example.pojo.Solution;
-import org.example.pojo.Student;
 import org.example.pojo.Task;
 
-import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
 public class SolutionDaoImpl extends DaoImpl<Solution, Long> implements SolutionDao {
+
+    public static final String GET_SOLUTION_BY_STUDENT_AND_TASK = "SELECT s FROM Solution s WHERE s.student=%d AND s.task=%d";
+    public static final String GET_SOLUTIONS_BY_TASK = "SELECT s FROM Solution s WHERE s.task=%d AND s.readyForReview=true";
 
     public SolutionDaoImpl() {
 
@@ -17,27 +21,33 @@ public class SolutionDaoImpl extends DaoImpl<Solution, Long> implements Solution
     }
 
     @Override
-    public Solution getByStudentTask(Student student, Task task) throws EntityNotFoundException {
+    public Solution getByStudentTask(Long studentId, Long taskId) throws NoResultException {
 
-        Solution solution;
-        String sqlQuery = String.format("SELECT s FROM Solution s WHERE s.student=%d AND s.task=%d",
-            student.getId(), task.getId());
-        getEm().getTransaction().begin();
+        String sqlQuery = String.format(GET_SOLUTION_BY_STUDENT_AND_TASK,
+            studentId, taskId);
         TypedQuery<Solution> query = getEm().createQuery(sqlQuery, Solution.class);
-        solution = query.getSingleResult();
-        getEm().getTransaction().commit();
-        return solution;
+        return query.getSingleResult();
     }
 
     @Override
     public List<Solution> getAllReadyByTask(Task task) {
 
-        String sqlQuery = String.format("SELECT s FROM Solution s WHERE s.task=%d AND s.readyForReview=true",
+        String sqlQuery = String.format(GET_SOLUTIONS_BY_TASK,
             task.getId());
-        getEm().getTransaction().begin();
         TypedQuery<Solution> query = getEm().createQuery(sqlQuery, Solution.class);
-        List<Solution> solutions = query.getResultList();
+        return query.getResultList();
+    }
+
+    @Override
+    public void deleteSolutionsWithoutStudentIdAndTaskId() {
+
+        String sqlQuery = String.format(GET_SOLUTION_BY_STUDENT_AND_TASK,
+            StudentDao.DELETED_STUDENT_ID, TaskDao.DELETED_TASK_ID);
+        TypedQuery<Solution> query = getEm().createQuery(sqlQuery, Solution.class);
+        List<Solution> list = query.getResultList();
+
+        getEm().getTransaction().begin();
+        list.forEach(solution -> getEm().remove(solution));
         getEm().getTransaction().commit();
-        return solutions;
     }
 }
