@@ -88,6 +88,7 @@ public class AdminServiceImpl extends ParrentService implements AdminService {
 
         return getCourseDao().readAllByProfId(professor.getId());
     }
+
     @Override
     public Course createCourse(String tittle, Professor professor) {
 
