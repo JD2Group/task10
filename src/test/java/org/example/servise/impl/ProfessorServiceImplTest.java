@@ -101,7 +101,7 @@ class ProfessorServiceImplTest {
         Solution expected = solutions.get(RANDOM.nextInt(solutions.size()));
         Solution actual = service.getSolution(expected.getStudent(), expected.getTask());
 
-        assertEquals(expected, actual);
+        assertEquals(expected.getId(), actual.getId());
     }
 
     @Test

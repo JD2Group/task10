@@ -18,7 +18,7 @@ public abstract class MockConstants {
     public static final String STUDENT_EMAIL_PATTERN = "Student No.%d email  No.";
     public static final String TASK_TITLE_PATTERN = "Task title No.";
     public static final String TASK_DESCRIPTION_PATTERN = "Task description No.";
-    public static final int MAX_LIST_SIZE = 15;
+    public static final int LIST_SIZE = 5;
     public static final String UPDATE = "updated";
     public static final String DELETE_ALL_COURSES = "delete from courses where id <> 1";
     public static final String DELETE_ALL_PROFESSORS = "delete from professors";
@@ -34,5 +34,5 @@ public abstract class MockConstants {
     public static final String GET_NUMBER_OF_TASKS_BY_COURSE = "select count(*) from tasks where course_id = ?1";
     public static final String GET_NUMBER_OF_TASKS_BY_STUDENT = "select count(*) from tasks where course_id IN (SELECT course_id from students_courses where student_id = ?1)";
     public static final String PROFESSOR_EMAIL = "professor email";
-    public static final String IS_STUDENT_REGISTERED_FOR_COURSE_QUERY = "select exists(select * from students_courses where course_id = ?1 and student_id = ?2)";
+    public static final String IS_STUDENT_REGISTERED_FOR_COURSE_QUERY = "select count(*) from students_courses where course_id = ?1 and student_id = ?2";
 }

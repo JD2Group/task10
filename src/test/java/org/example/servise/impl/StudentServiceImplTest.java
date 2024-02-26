@@ -17,6 +17,7 @@ import org.example.utils.QueryManager;
 import org.junit.jupiter.api.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.example.utils.MockConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,7 +51,9 @@ class StudentServiceImplTest {
         courseDao = new CourseDaoImpl();
         taskDao = new TaskDaoImpl();
         solutionDao = new SolutionDaoImpl();
-        List<Student> students = studentDao.readAll();
+        List<Student> students = studentDao.readAll().stream()
+                .filter(s -> s.getCourses().size() == LIST_SIZE)
+                .collect(Collectors.toList());
         student = students.get(RANDOM.nextInt(students.size()));
     }
 
@@ -99,7 +102,9 @@ class StudentServiceImplTest {
 
     @Test
     void checkInCourse() {
-        List<Course> courses = studentDao.readAllCoursesByStudentId(student.getId());
+        Student student = MockUtils.generateStudent();
+        studentDao.create(student);
+        List<Course> courses = courseDao.readAll();
         Course course = courses.get(RANDOM.nextInt(courses.size()));
         service.checkInCourse(course, student);
         int expected = 1;

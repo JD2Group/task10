@@ -10,6 +10,7 @@ import javax.persistence.Query;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.example.utils.MockConstants.*;
 import static org.example.utils.MockConstants.DELETE_ALL_STUDENTS;
@@ -41,19 +42,21 @@ public class QueryManager {
 
         List<Student> students = MockUtils.generateRandomStudents();
         students.forEach(s -> {
-            s.setCourses(new HashSet<>(courses.subList(0, RANDOM.nextInt(courses.size() - 1) + 1)));
+            courses.forEach(s::addCourse);
             studentDao.create(s);
         });
 
-        MockUtils.generateRandomTasks().forEach(t -> {
-            t.setCourse(courses.get(RANDOM.nextInt(courses.size())));
-            taskDao.create(t);
-            Solution solution = MockUtils.generateSolution();
-            solution.setTask(t);
-            solution.setStudent(students.get(RANDOM.nextInt(students.size())));
-            solution.setReadyForReview(RANDOM.nextInt(MAX_RANDOM_NUMBER) % 2 == 0);
-            solutionDao.create(solution);
-        });
+        IntStream.range(0, LIST_SIZE).forEach(i -> {
+            MockUtils.generateRandomTasks().forEach(t -> {
+                        t.setCourse(courses.get(i));
+                        taskDao.create(t);
+                        Solution solution = MockUtils.generateSolution();
+                        solution.setTask(t);
+                        solution.setStudent(students.get(i));
+                        solution.setReadyForReview(i % 2 == 0);
+                        solutionDao.create(solution);
+                    });
+                });
 
         professorDao.closeManager();
         courseDao.closeManager();
