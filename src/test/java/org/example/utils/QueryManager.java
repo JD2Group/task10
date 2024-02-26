@@ -1,28 +1,30 @@
 package org.example.utils;
 
-import net.bytebuddy.asm.Advice;
 import org.example.dao.*;
 import org.example.dao.impl.*;
 import org.example.pojo.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import static org.example.utils.MockConstants.*;
 import static org.example.utils.MockConstants.DELETE_ALL_STUDENTS;
 
 public class QueryManager {
+    private EntityManager manager;
 
-    public static void createTestData(String professorEmail) {
+    public QueryManager() {
+        this.manager = HibernateUtil.getEntityManager();
+    }
+
+    public void createTestData(String professorEmail) {
+        ProfessorDao professorDao = new ProfessorDaoImpl();
         CourseDao courseDao = new CourseDaoImpl();
         StudentDao studentDao = new StudentDaoImpl();
-        ProfessorDao professorDao = new ProfessorDaoImpl();
         TaskDao taskDao = new TaskDaoImpl();
         SolutionDao solutionDao = new SolutionDaoImpl();
 
@@ -53,58 +55,61 @@ public class QueryManager {
             solutionDao.create(solution);
         });
 
+        professorDao.closeManager();
         courseDao.closeManager();
         studentDao.closeManager();
-        professorDao.closeManager();
         taskDao.closeManager();
         solutionDao.closeManager();
     }
 
-    public static void deleteAll() {
-        EntityManager manager = HibernateUtil.getEntityManager();
+    public void deleteAll() {
+        checkEntityManager();
         manager.getTransaction().begin();
-        Query deleteAllSolutions = manager.createNativeQuery(DELETE_ALL_SOLUTIONS);
-        deleteAllSolutions.executeUpdate();
-        manager.flush();
-        Query deleteAllTasks = manager.createNativeQuery(DELETE_ALL_TASK);
-        deleteAllTasks.executeUpdate();
-        manager.flush();
-        Query deleteAllFromStudentsCourses = manager.createNativeQuery(DELETE_ALL_STUDENTS_COURSES);
-        deleteAllFromStudentsCourses.executeUpdate();
-        manager.flush();
-        Query deleteAll = manager.createNativeQuery(DELETE_ALL_COURSES);
-        deleteAll.executeUpdate();
-        manager.flush();
-        Query deleteAllProfessors = manager.createNativeQuery(DELETE_ALL_PROFESSORS);
-        deleteAllProfessors.executeUpdate();
-        manager.flush();
-        Query deleteAllStudents = manager.createNativeQuery(DELETE_ALL_STUDENTS);
-        deleteAllStudents.executeUpdate();
+        executeUpdateQuery(DELETE_ALL_SOLUTIONS);
+        executeUpdateQuery(DELETE_ALL_TASK);
+        executeUpdateQuery(DELETE_ALL_STUDENTS_COURSES);
+        executeUpdateQuery(DELETE_ALL_COURSES);
+        executeUpdateQuery(DELETE_ALL_PROFESSORS);
+        executeUpdateQuery(DELETE_ALL_STUDENTS);
         manager.getTransaction().commit();
         manager.close();
     }
 
-    private static void executeQuery(Query query) {
-        query.executeUpdate();
-
+    private void executeUpdateQuery(String query) {
+        Query deleteQuery = manager.createNativeQuery(query);
+        deleteQuery.executeUpdate();
+        manager.flush();
     }
 
-
-    public static int getNumberOfObjects(String query, Long... id) {
-        EntityManager manager = HibernateUtil.getEntityManager();
-        Query numberOfStudentsQuery = manager.createNativeQuery(query);
+    public int getNumberOfObjects(String query, Long... id) {
+        checkEntityManager();
+        Query selectNumberOfObjects = manager.createNativeQuery(query);
         for (int i = 1; i <= id.length; i++) {
-            numberOfStudentsQuery.setParameter(i, id[i - 1]);
+            selectNumberOfObjects.setParameter(i, id[i - 1]);
         }
-        BigInteger result = (BigInteger) numberOfStudentsQuery.getSingleResult();
-        manager.close();
+        BigInteger result = (BigInteger) selectNumberOfObjects.getSingleResult();
         return result.intValue();
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> List<T> getList(String query, Class<T> objectClass) {
-        EntityManager manager = HibernateUtil.getEntityManager();
+    public <T> List<T> getList(String query, Class<T> objectClass, Long... id) {
+        checkEntityManager();
         Query selectQuery = manager.createNativeQuery(query, objectClass);
+        for (int i = 1; i <= id.length; i++) {
+            selectQuery.setParameter(i, id[i - 1]);
+        }
         return (List<T>) selectQuery.getResultList();
+    }
+
+    private void checkEntityManager() {
+        if (!manager.isOpen()) {
+            manager = HibernateUtil.getEntityManager();
+        }
+    }
+
+    public void closeSession() {
+        if (manager.isOpen()) {
+            manager.close();
+        }
     }
 }
