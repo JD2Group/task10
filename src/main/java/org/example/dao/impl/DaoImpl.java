@@ -1,5 +1,6 @@
 package org.example.dao.impl;
 
+import org.apache.log4j.Logger;
 import org.example.dao.DAO;
 import org.example.utils.HibernateUtil;
 
@@ -8,8 +9,11 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
+import static org.example.utils.Constants.*;
+
 public abstract class DaoImpl<T, R> implements DAO<T, R> {
     public static final String GET_ALL_ENTITIES = "SELECT s FROM %s s";
+    private final Logger log = Logger.getLogger(DaoImpl.class);
     private final Class<T> clazz;
     private EntityManager em;
 
@@ -25,6 +29,7 @@ public abstract class DaoImpl<T, R> implements DAO<T, R> {
         em.getTransaction().begin();
         em.persist(object);
         em.getTransaction().commit();
+        log.info(String.format(SAVE_MESSAGE, object.toString()));
         return object;
     }
 
@@ -41,6 +46,7 @@ public abstract class DaoImpl<T, R> implements DAO<T, R> {
         em.getTransaction().begin();
         t = em.merge(object);
         em.getTransaction().commit();
+        log.info(String.format(UPDATE_MESSAGE, object.toString()));
         return t;
     }
 
@@ -48,14 +54,14 @@ public abstract class DaoImpl<T, R> implements DAO<T, R> {
     public void delete(R id) throws EntityNotFoundException {
 
         em.getTransaction().begin();
-        Object rootEntity = em.getReference(clazz, id);
+        Object rootEntity = em.getReference(clazz, id.toString());
         em.remove(rootEntity);
         em.getTransaction().commit();
+        log.info(String.format(DELETE_MESSAGE, id.toString()));
     }
 
     @Override
     public List<T> readAll() {
-
         TypedQuery<T> query = em.createQuery(getAllSqlString(), clazz);
         return query.getResultList();
     }
@@ -65,6 +71,7 @@ public abstract class DaoImpl<T, R> implements DAO<T, R> {
 
         if (em != null && em.isOpen()) {
             em.close();
+            log.info(String.format(MANAGER_CLOSED_MESSAGE, em.toString()));
         }
     }
 
@@ -72,6 +79,7 @@ public abstract class DaoImpl<T, R> implements DAO<T, R> {
 
         if (em == null || !em.isOpen()) {
             em = HibernateUtil.getEntityManager();
+            log.info(String.format(MANAGER_OPENED_MESSAGE, em.toString()));
         }
         return em;
     }

@@ -1,6 +1,7 @@
 package org.example.servise.impl;
 
 import lombok.Getter;
+import org.apache.log4j.Logger;
 import org.example.excepion.Exceptions;
 import org.example.pojo.Course;
 import org.example.pojo.Solution;
@@ -11,8 +12,11 @@ import org.example.servise.StudentService;
 import javax.persistence.NoResultException;
 import java.util.List;
 
+import static org.example.utils.Constants.*;
+
 @Getter
-public class StudentServiceImpl extends ParrentService implements StudentService {
+public class StudentServiceImpl extends ParentService implements StudentService {
+    private final Logger log = Logger.getLogger(StudentServiceImpl.class);
 
     @Override
     public Student getStudentByEmail(String email) {
@@ -36,6 +40,7 @@ public class StudentServiceImpl extends ParrentService implements StudentService
     public void checkInCourse(Course course, Student student) {
 
         student.addCourse(course);
+        log.info(String.format(STUDENT_CHECK_IN_COURSE_MESSAGE, student.toString(), course.toString()));
         getStudentDao().update(student);
     }
 
@@ -43,6 +48,7 @@ public class StudentServiceImpl extends ParrentService implements StudentService
     public void checkOutCourse(Course course, Student student) {
 
         student.getCourses().remove(course);
+        log.info(String.format(STUDENT_CHECK_OUT_COURSE_MESSAGE, student.toString(), course.toString()));
         getStudentDao().update(student);
     }
 
@@ -69,6 +75,7 @@ public class StudentServiceImpl extends ParrentService implements StudentService
                                                    .task(task)
                                                    .student(student)
                                                    .build());
+            log.info(String.format(OBJECT_CREATED_MESSAGE, solution));
         }
 
 
@@ -82,7 +89,9 @@ public class StudentServiceImpl extends ParrentService implements StudentService
             solution.setResponse(response);
             solution.setReadyForReview(readyForReview);
             getSolutionDao().update(solution);
+            log.info(String.format(OBJECT_UPDATED_MESSAGE, solution));
         } else {
+            log.error(String.format(SOLUTION_RESOLVED_MESSAGE, solution.toString()));
             throw new Exceptions.SolutionIsResolvedException();
         }
     }

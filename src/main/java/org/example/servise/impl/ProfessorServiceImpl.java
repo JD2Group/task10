@@ -1,5 +1,6 @@
 package org.example.servise.impl;
 
+import org.apache.log4j.Logger;
 import org.example.pojo.*;
 import org.example.servise.ProfessorService;
 
@@ -7,7 +8,11 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import java.util.List;
 
-public class ProfessorServiceImpl extends ParrentService implements ProfessorService {
+import static org.example.utils.Constants.OBJECT_CREATED_MESSAGE;
+import static org.example.utils.Constants.OBJECT_UPDATED_MESSAGE;
+
+public class ProfessorServiceImpl extends ParentService implements ProfessorService {
+    private final Logger log = Logger.getLogger(ProfessorServiceImpl.class);
 
     @Override
     public Professor getProfessorByEmail(String email) {
@@ -54,6 +59,7 @@ public class ProfessorServiceImpl extends ParrentService implements ProfessorSer
                         .description(description)
                         .course(course)
                         .build();
+        log.info(String.format(OBJECT_CREATED_MESSAGE, task));
         return getTaskDao().update(task);
     }
 
@@ -76,6 +82,7 @@ public class ProfessorServiceImpl extends ParrentService implements ProfessorSer
 
         solution.setMark(mark);
         solution.setReview(review);
+        log.info(String.format(OBJECT_UPDATED_MESSAGE, solution));
         getSolutionDao().update(solution);
     }
 }

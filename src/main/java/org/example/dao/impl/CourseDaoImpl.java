@@ -1,5 +1,6 @@
 package org.example.dao.impl;
 
+import org.apache.log4j.Logger;
 import org.example.dao.CourseDao;
 import org.example.pojo.Course;
 
@@ -8,11 +9,14 @@ import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
+import static org.example.utils.Constants.*;
+
 public class CourseDaoImpl extends DaoImpl<Course, Long> implements CourseDao {
 
     public static final String GET_COURSE_BY_PROFESSOR_ID = "SELECT c FROM Course c WHERE c.professor=%d AND c.id NOT LIKE '%d'";
     public static final String GET_COURSES_BY_TITLE_EMAIL = "SELECT c FROM Course c, Professor p WHERE c.title='%s' AND c.professor=p.id AND p.email='%s' AND c.id NOT LIKE '%d'";
     public static final String GET_ALL_COURSES = "SELECT c FROM Course c WHERE c.id NOT LIKE '%d'";
+    private final Logger log = Logger.getLogger(CourseDaoImpl.class);
 
     public CourseDaoImpl() {
         super(Course.class);
@@ -35,8 +39,15 @@ public class CourseDaoImpl extends DaoImpl<Course, Long> implements CourseDao {
                     .forEach(getEm()::merge);
                 getEm().flush();
                 getEm().remove(course);
-                getEm().getTransaction().commit();
+                try {
+                    getEm().getTransaction().commit();
+                    log.info(String.format(DELETE_MESSAGE, course.toString()));
+                } catch (Exception e) {
+                    getEm().getTransaction().rollback();
+                    log.error(String.format(DELETE_FAILED_MESSAGE, course.toString(), e.getCause()));
+                }
             } else {
+                log.error(String.format(ENTITY_NOT_FOUND_MESSAGE,id));
                 throw new EntityNotFoundException();
             }
         }

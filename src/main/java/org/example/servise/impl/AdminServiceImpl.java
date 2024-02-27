@@ -1,5 +1,6 @@
 package org.example.servise.impl;
 
+import org.apache.log4j.Logger;
 import org.example.pojo.Course;
 import org.example.pojo.Professor;
 import org.example.pojo.Student;
@@ -10,7 +11,10 @@ import javax.persistence.NoResultException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdminServiceImpl extends ParrentService implements AdminService {
+import static org.example.utils.Constants.OBJECT_CREATED_MESSAGE;
+
+public class AdminServiceImpl extends ParentService implements AdminService {
+    private final Logger log = Logger.getLogger(AdminServiceImpl.class);
 
     @Override
     public Professor createProfessorAccount(String name, String surname, String email) {
@@ -20,7 +24,7 @@ public class AdminServiceImpl extends ParrentService implements AdminService {
                 .surname(surname)
                 .email(email)
                 .build();
-
+        log.info(String.format(OBJECT_CREATED_MESSAGE, professor));
         return getProfessorDao().create(professor);
     }
 
@@ -32,6 +36,7 @@ public class AdminServiceImpl extends ParrentService implements AdminService {
                 .surname(surname)
                 .email(email)
                 .build();
+        log.info(String.format(OBJECT_CREATED_MESSAGE, student));
         return getStudentDao().create(student);
     }
 
@@ -96,6 +101,8 @@ public class AdminServiceImpl extends ParrentService implements AdminService {
                 .title(tittle)
                 .professor(professor)
                 .build();
+
+        log.info(String.format(OBJECT_CREATED_MESSAGE, course));
         return getCourseDao().create(course);
     }
 

@@ -1,5 +1,6 @@
 package org.example.dao.impl;
 
+import org.apache.log4j.Logger;
 import org.example.dao.StudentDao;
 import org.example.pojo.Course;
 import org.example.pojo.Student;
@@ -13,10 +14,14 @@ import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.example.utils.Constants.*;
+
 public class StudentDaoImpl extends DaoImpl<Student, Long> implements StudentDao {
 
     public static final String GET_STUDENT_BY_EMAIL = "SELECT s FROM Student s WHERE s.email='%s' AND s.id NOT LIKE '%d'";
     public static final String GET_ALL_STUDENTS = "SELECT s FROM Student s WHERE s.id NOT LIKE '%d'";
+    private final Logger log = Logger.getLogger(StudentDaoImpl.class);
+
 
     public StudentDaoImpl() {
 
@@ -42,8 +47,15 @@ public class StudentDaoImpl extends DaoImpl<Student, Long> implements StudentDao
                     .peek(solution -> solution.setStudent(deleted))
                     .forEach(getEm()::merge);
                 getEm().remove(student);
-                getEm().getTransaction().commit();
+                try {
+                    getEm().getTransaction().commit();
+                    log.info(String.format(DELETE_MESSAGE, student.toString()));
+                } catch (Exception e) {
+                    getEm().getTransaction().rollback();
+                    log.error(String.format(DELETE_FAILED_MESSAGE, student.toString(), e.getCause()));
+                }
             } else {
+                log.error(String.format(ENTITY_NOT_FOUND_MESSAGE,id));
                 throw new EntityNotFoundException();
             }
         }
