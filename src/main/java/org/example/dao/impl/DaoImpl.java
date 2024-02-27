@@ -28,8 +28,7 @@ public abstract class DaoImpl<T, R> implements DAO<T, R> {
 
         em.getTransaction().begin();
         em.persist(object);
-        em.getTransaction().commit();
-        log.info(String.format(SAVE_MESSAGE, object.toString()));
+        commitTransaction(SAVE_MESSAGE, SAVE_FAILED_MESSAGE, object);
         return object;
     }
 
@@ -45,8 +44,7 @@ public abstract class DaoImpl<T, R> implements DAO<T, R> {
         T t;
         em.getTransaction().begin();
         t = em.merge(object);
-        em.getTransaction().commit();
-        log.info(String.format(UPDATE_MESSAGE, object.toString()));
+        commitTransaction(UPDATE_MESSAGE, UPDATE_FAILED_MESSAGE, object);
         return t;
     }
 
@@ -56,8 +54,7 @@ public abstract class DaoImpl<T, R> implements DAO<T, R> {
         em.getTransaction().begin();
         Object rootEntity = em.getReference(clazz, id.toString());
         em.remove(rootEntity);
-        em.getTransaction().commit();
-        log.info(String.format(DELETE_MESSAGE, id.toString()));
+        commitTransaction(DELETE_MESSAGE, DELETE_FAILED_MESSAGE, rootEntity);
     }
 
     @Override
@@ -82,6 +79,18 @@ public abstract class DaoImpl<T, R> implements DAO<T, R> {
             log.info(String.format(MANAGER_OPENED_MESSAGE, em.toString()));
         }
         return em;
+    }
+
+    protected void commitTransaction(String positiveMessage, String negativeMessage, Object object) {
+        String posMessage = String.format(positiveMessage, object.toString());
+        String negMessage = String.format(negativeMessage, object.toString());
+        try {
+            getEm().getTransaction().commit();
+            log.info(posMessage);
+        } catch (Exception e) {
+            getEm().getTransaction().rollback();
+            log.error(negMessage + e.getCause());
+        }
     }
 
     protected String getAllSqlString() {

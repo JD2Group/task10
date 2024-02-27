@@ -47,13 +47,7 @@ public class StudentDaoImpl extends DaoImpl<Student, Long> implements StudentDao
                     .peek(solution -> solution.setStudent(deleted))
                     .forEach(getEm()::merge);
                 getEm().remove(student);
-                try {
-                    getEm().getTransaction().commit();
-                    log.info(String.format(DELETE_MESSAGE, student.toString()));
-                } catch (Exception e) {
-                    getEm().getTransaction().rollback();
-                    log.error(String.format(DELETE_FAILED_MESSAGE, student.toString(), e.getCause()));
-                }
+                commitTransaction(DELETE_MESSAGE, DELETE_FAILED_MESSAGE, student);
             } else {
                 log.error(String.format(ENTITY_NOT_FOUND_MESSAGE,id));
                 throw new EntityNotFoundException();

@@ -42,13 +42,7 @@ public class ProfessorDaoImpl extends DaoImpl<Professor, Long> implements Profes
                 .forEach(getEm()::merge);
             getEm().flush();
             getEm().remove(professor);
-            try {
-                getEm().getTransaction().commit();
-                log.info(String.format(DELETE_MESSAGE, professor.toString()));
-            } catch (Exception e) {
-                getEm().getTransaction().rollback();
-                log.error(String.format(DELETE_FAILED_MESSAGE, professor.toString(), e.getCause()));
-            }
+            commitTransaction(DELETE_MESSAGE, DELETE_FAILED_MESSAGE, professor);
         } else {
             log.error(String.format(ENTITY_NOT_FOUND_MESSAGE,id));
             throw new EntityNotFoundException();

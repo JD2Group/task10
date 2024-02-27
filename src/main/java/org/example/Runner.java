@@ -1,8 +1,6 @@
 package org.example;
 
-import org.example.dao.SolutionDao;
 import org.example.dao.impl.SolutionDaoImpl;
-import org.example.dao.impl.TaskDaoImpl;
 import org.example.excepion.Exceptions;
 import org.example.pojo.*;
 import org.example.servise.AdminService;
@@ -12,11 +10,7 @@ import org.example.servise.impl.AdminServiceImpl;
 import org.example.servise.impl.ProfessorServiceImpl;
 import org.example.servise.impl.StudentServiceImpl;
 import org.example.utils.Generator;
-
-import javax.persistence.NoResultException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -61,8 +55,31 @@ public class Runner {
 
         printAdminService(professor, students.get(0), courses.get(0));
         printProfessorService(professor);
+        printStudentService(students.get(0));
         deleteAccounts(professor, students.get(0), courses.get(0));
+    }
 
+    public static void printStudentService(Student student) {
+        System.out.println(STUDENT_SERVICE.getStudentByEmail(student.getEmail()));
+        List<Course> courses = STUDENT_SERVICE.getAllCourses();
+        courses.forEach(System.out::println);
+        List<Course> studentCourses = STUDENT_SERVICE.getMyCourses(student);
+        studentCourses.forEach(System.out::println);
+        Course randomCourse = studentCourses.get(RANDOM.nextInt(studentCourses.size()));
+        STUDENT_SERVICE.checkOutCourse(randomCourse, student);
+        System.out.println(STUDENT_SERVICE.getMyCourses(student).contains(randomCourse));
+        STUDENT_SERVICE.checkInCourse(randomCourse,student);
+        System.out.println(STUDENT_SERVICE.getMyCourses(student).contains(randomCourse));
+        List<Task> tasks = STUDENT_SERVICE.getTasksFromCourse(randomCourse);
+        tasks.forEach(System.out::println);
+        List<Task> studentTasks = STUDENT_SERVICE.getAllMyTasks(student);
+        studentTasks.forEach(System.out::println);
+        Task randomTask = tasks.get(RANDOM.nextInt(tasks.size()));
+        Solution solution = STUDENT_SERVICE.getSolution(randomTask, student);
+        System.out.println(solution);
+        if (!solution.getReadyForReview()) {
+            solveSolution(solution, true);
+        }
     }
 
     public static void printProfessorService(Professor professor) {
@@ -100,13 +117,13 @@ public class Runner {
     }
 
     public static void printAdminService(Professor professor, Student student, Course course) {
-        ADMIN_SERVICE.createCourse(Generator.generateTitle(), null);
+        System.out.println(ADMIN_SERVICE.createCourse(Generator.generateTitle(), null));
         ADMIN_SERVICE.getAllCourses().forEach(System.out::println);
         System.out.println();
         ADMIN_SERVICE.getAllCourses(professor).forEach(System.out::println);
         System.out.println();
-        ADMIN_SERVICE.getProfessorByEmail(professor.getEmail());
-        ADMIN_SERVICE.getStudentByEmail(student.getEmail());
+        System.out.println(ADMIN_SERVICE.getProfessorByEmail(professor.getEmail()));
+        System.out.println(ADMIN_SERVICE.getStudentByEmail(student.getEmail()));
         System.out.println();
         ADMIN_SERVICE.getAllStudents().forEach(System.out::println);
         ADMIN_SERVICE.getAllStudents(course).forEach(System.out::println);
@@ -127,7 +144,6 @@ public class Runner {
         System.out.println(String.format(OBJECT_DELETED, professor.toString(), !professors.contains(professor)));
         System.out.println(String.format(OBJECT_DELETED, student.toString(), !students.contains(student)));
         System.out.println(String.format(OBJECT_DELETED, course.toString(), !courses.contains(course)));
-
         ADMIN_SERVICE.clearBaseFromSolutionsWithoutStudentIdAndTaskId();
     }
 
