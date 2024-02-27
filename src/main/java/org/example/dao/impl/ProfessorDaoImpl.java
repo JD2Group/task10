@@ -1,5 +1,6 @@
 package org.example.dao.impl;
 
+import org.apache.log4j.Logger;
 import org.example.dao.ProfessorDao;
 import org.example.pojo.Professor;
 import org.hibernate.PropertyValueException;
@@ -9,10 +10,13 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
+import static org.example.utils.Constants.*;
+
 public class ProfessorDaoImpl extends DaoImpl<Professor, Long> implements ProfessorDao {
 
 
     public static final String GET_PROFESSOR_BY_EMAIL = "SELECT p FROM Professor p WHERE p.email='%s'";
+    private final Logger log = Logger.getLogger(ProfessorDaoImpl.class);
 
     public ProfessorDaoImpl() {
 
@@ -38,8 +42,15 @@ public class ProfessorDaoImpl extends DaoImpl<Professor, Long> implements Profes
                 .forEach(getEm()::merge);
             getEm().flush();
             getEm().remove(professor);
-            getEm().getTransaction().commit();
+            try {
+                getEm().getTransaction().commit();
+                log.info(String.format(DELETE_MESSAGE, professor.toString()));
+            } catch (Exception e) {
+                getEm().getTransaction().rollback();
+                log.error(String.format(DELETE_FAILED_MESSAGE, professor.toString(), e.getCause()));
+            }
         } else {
+            log.error(String.format(ENTITY_NOT_FOUND_MESSAGE,id));
             throw new EntityNotFoundException();
         }
     }

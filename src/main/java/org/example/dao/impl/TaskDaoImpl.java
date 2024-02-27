@@ -1,5 +1,6 @@
 package org.example.dao.impl;
 
+import org.apache.log4j.Logger;
 import org.example.dao.TaskDao;
 import org.example.pojo.Task;
 
@@ -8,10 +9,13 @@ import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
+import static org.example.utils.Constants.*;
+
 public class TaskDaoImpl extends DaoImpl<Task, Long> implements TaskDao {
 
     public static final String GET_TASKS_BY_COURSE = "SELECT c FROM Task c WHERE c.course=%d AND c.id NOT LIKE '%d'";
     public static final String GET_ALL_TASKS = "SELECT c FROM Task c WHERE c.id NOT LIKE '%d'";
+    private final Logger log = Logger.getLogger(TaskDaoImpl.class);
 
     public TaskDaoImpl() {
 
@@ -31,8 +35,15 @@ public class TaskDaoImpl extends DaoImpl<Task, Long> implements TaskDao {
                     .peek(solution -> solution.setTask(deleted))
                     .forEach(getEm()::merge);
                 getEm().remove(task);
-                getEm().getTransaction().commit();
+                try {
+                    getEm().getTransaction().commit();
+                    log.info(String.format(DELETE_MESSAGE, task.toString()));
+                } catch (Exception e) {
+                    getEm().getTransaction().rollback();
+                    log.error(String.format(DELETE_FAILED_MESSAGE, task.toString(), e.getCause()));
+                }
             } else {
+                log.error(String.format(ENTITY_NOT_FOUND_MESSAGE,id));
                 throw new EntityNotFoundException();
             }
         }
