@@ -1,5 +1,8 @@
 package org.example;
 
+import org.example.dao.SolutionDao;
+import org.example.dao.impl.SolutionDaoImpl;
+import org.example.dao.impl.TaskDaoImpl;
 import org.example.excepion.Exceptions;
 import org.example.pojo.*;
 import org.example.servise.AdminService;
@@ -11,7 +14,9 @@ import org.example.servise.impl.StudentServiceImpl;
 import org.example.utils.Generator;
 
 import javax.persistence.NoResultException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -55,8 +60,43 @@ public class Runner {
         solutions.forEach(s -> PROFESSOR_SERVICE.review(s, MARK, Generator.generateReview()));
 
         printAdminService(professor, students.get(0), courses.get(0));
+        printProfessorService(professor);
         deleteAccounts(professor, students.get(0), courses.get(0));
 
+    }
+
+    public static void printProfessorService(Professor professor) {
+        System.out.println(PROFESSOR_SERVICE.getProfessorByEmail(professor.getEmail()));
+        List<Course> courses = PROFESSOR_SERVICE.getMyCourses(professor);
+        courses.forEach(System.out::println);
+        List<Task> tasks = PROFESSOR_SERVICE.getAllTasks(courses.get(RANDOM.nextInt(courses.size())));
+        tasks.forEach(System.out::println);
+        List<Student> students = PROFESSOR_SERVICE.getAllStudents(courses.get(RANDOM.nextInt(courses.size())));
+        students.forEach(System.out::println);
+        Task task = tasks.get(RANDOM.nextInt(tasks.size()));
+        System.out.println(task);
+        List<Solution> taskSolutions = new SolutionDaoImpl().readAll();
+        Solution randomSolution = taskSolutions.get(RANDOM.nextInt(taskSolutions.size()));
+        Student student = randomSolution.getStudent();
+        Task randomSolutionTask = randomSolution.getTask();
+        System.out.println(randomSolution.equals(PROFESSOR_SERVICE.getSolution(student, randomSolutionTask)));
+        List<Solution> readySol = taskSolutions.stream()
+                .filter(Solution::getReadyForReview)
+                .collect(Collectors.toList());
+        Task randomTask = readySol.get(RANDOM.nextInt(readySol.size())).getTask();
+        List<Solution> readySolutions = PROFESSOR_SERVICE.getAllReadySolutions(randomTask);
+        readySolutions.forEach(System.out::println);
+        Solution randomReadySolution = readySolutions.get(RANDOM.nextInt(readySolutions.size()));
+        PROFESSOR_SERVICE.review(randomReadySolution, MARK, Generator.generateReview());
+        System.out.println(PROFESSOR_SERVICE.getSolution(randomReadySolution.getStudent(), randomReadySolution.getTask()));
+        Course randomCourse = courses.get(RANDOM.nextInt(courses.size()));
+        Task newTask = PROFESSOR_SERVICE.addTask(randomCourse, Generator.generateTitle(), Generator.generateDescription());
+        System.out.println(newTask);
+        Task newTaskAfterUpdate = PROFESSOR_SERVICE.updateTask(newTask, Generator.generateTitle(), Generator.generateDescription());
+        System.out.println(newTaskAfterUpdate);
+        PROFESSOR_SERVICE.deleteTask(newTaskAfterUpdate);
+        List<Task> tasksAfterDelete = PROFESSOR_SERVICE.getAllTasks(newTaskAfterUpdate.getCourse());
+        System.out.println(String.format(OBJECT_DELETED, newTaskAfterUpdate.toString(), !tasksAfterDelete.contains(newTaskAfterUpdate)));
     }
 
     public static void printAdminService(Professor professor, Student student, Course course) {
