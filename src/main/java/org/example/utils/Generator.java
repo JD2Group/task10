@@ -1,4 +1,5 @@
 package org.example.utils;
+
 import static org.example.utils.Constants.*;
 
 public abstract class Generator {

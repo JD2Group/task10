@@ -31,21 +31,12 @@ public class CourseDaoImpl extends DaoImpl<Course, Long> implements CourseDao {
             if (course != null) {
                 getEm().getTransaction().begin();
                 getEm().refresh(course);
-                course.getStudents().stream()
-                    .peek(student -> student.getCourses().remove(course))
-                    .forEach(getEm()::merge);
                 course.getTasks().stream()
                     .peek(task -> task.setCourse(deleted))
                     .forEach(getEm()::merge);
                 getEm().flush();
                 getEm().remove(course);
-                try {
-                    getEm().getTransaction().commit();
-                    log.info(String.format(DELETE_MESSAGE, course.toString()));
-                } catch (Exception e) {
-                    getEm().getTransaction().rollback();
-                    log.error(String.format(DELETE_FAILED_MESSAGE, course.toString(), e.getCause()));
-                }
+                commitTransaction(DELETE_MESSAGE, DELETE_FAILED_MESSAGE, course);
             } else {
                 log.error(String.format(ENTITY_NOT_FOUND_MESSAGE,id));
                 throw new EntityNotFoundException();

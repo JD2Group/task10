@@ -33,6 +33,7 @@
         <addForeignKeyConstraint
                 baseTableName="students_courses"
                 baseColumnNames="student_id"
+                onDelete="CASCADE"
                 constraintName="FKr16q8s9m6kr7xupi4fw9iqpgl"
                 referencedTableName="students"
                 referencedColumnNames="id"/>
@@ -45,6 +46,7 @@
         <addForeignKeyConstraint
                 baseTableName="students_courses"
                 baseColumnNames="course_id"
+                onDelete="CASCADE"
                 constraintName="FKcc42107lsifo5rjyjlhdu6i6u"
                 referencedTableName="courses"
                 referencedColumnNames="id"/>

@@ -2,7 +2,7 @@ package org.example.utils;
 
 import java.util.Random;
 
-public class Constants {
+public final class Constants {
     public static final Random RANDOM = new Random();
     public static final int INITIAL_NUMBER_OF_COURSES = 6;
     public static final int INITIAL_NUMBER_OF_STUDENTS = 6;
@@ -18,8 +18,10 @@ public class Constants {
     public static final String OBJECT_DELETED = "Object %s was deleted: %b";
     public static final int MARK = 5;
     public static final String SAVE_MESSAGE = "Object saved successfully: %s";
-    public static final String DELETE_FAILED_MESSAGE = "Object %s was not deleted, cause: %s";
+    public static final String SAVE_FAILED_MESSAGE = "Object saving failed: %s, cause: ";
+    public static final String DELETE_FAILED_MESSAGE = "Object %s was not deleted, cause: ";
     public static final String UPDATE_MESSAGE = "Object updated successfully: %s";
+    public static final String UPDATE_FAILED_MESSAGE = "Object update failed: %s, cause: ";
     public static final String DELETE_MESSAGE = "Object %s deleted successfully";
     public static final String MANAGER_CLOSED_MESSAGE = "EntityManager closed: %s";
     public static final String MANAGER_OPENED_MESSAGE = "EntityManager opened: %s";
