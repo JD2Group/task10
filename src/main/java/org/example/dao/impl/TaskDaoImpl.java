@@ -10,6 +10,9 @@ import java.util.List;
 
 public class TaskDaoImpl extends DaoImpl<Task, Long> implements TaskDao {
 
+    public static final String GET_TASKS_BY_COURSE = "SELECT c FROM Task c WHERE c.course=%d AND c.id NOT LIKE '%d'";
+    public static final String GET_ALL_TASKS = "SELECT c FROM Task c WHERE c.id NOT LIKE '%d'";
+
     public TaskDaoImpl() {
 
         super(Task.class);
@@ -18,7 +21,7 @@ public class TaskDaoImpl extends DaoImpl<Task, Long> implements TaskDao {
     @Override
     public void delete(Long id) throws EntityNotFoundException {
 
-        if (id != DELETED_TASK_ID) {
+        if (DELETED_TASK_ID != id) {
             Task task = super.read(id);
             Task deleted = super.read(DELETED_TASK_ID);
             if (task != null) {
@@ -39,31 +42,15 @@ public class TaskDaoImpl extends DaoImpl<Task, Long> implements TaskDao {
     public List<Task> readAllByCourseId(Long courseId) throws NoResultException {
 
         String sqlQuery = String
-                              .format("SELECT c FROM Task c WHERE c.course=%d AND c.id NOT LIKE '%d'",
+                              .format(GET_TASKS_BY_COURSE,
                                   courseId, TaskDao.DELETED_TASK_ID);
-        getEm().getTransaction().begin();
         TypedQuery<Task> query = getEm().createQuery(sqlQuery, Task.class);
-        List<Task> list = query.getResultList();
-        getEm().getTransaction().commit();
-        return list;
-    }
-
-    @Override
-    public List<Task> readAllByStudentId(Long studentId) throws NoResultException {
-
-        String sqlQuery = String
-                              .format("SELECT t FROM Task t WHERE t.student=%d AND t.id NOT LIKE '%d'",
-                                  studentId, TaskDao.DELETED_TASK_ID);
-        getEm().getTransaction().begin();
-        TypedQuery<Task> query = getEm().createQuery(sqlQuery, Task.class);
-        List<Task> list = query.getResultList();
-        getEm().getTransaction().commit();
-        return list;
+        return query.getResultList();
     }
 
     @Override
     protected String getAllSqlString() {
 
-        return String.format("SELECT c FROM Task c WHERE c.id NOT LIKE '%d'", TaskDao.DELETED_TASK_ID);
+        return String.format(GET_ALL_TASKS, TaskDao.DELETED_TASK_ID);
     }
 }

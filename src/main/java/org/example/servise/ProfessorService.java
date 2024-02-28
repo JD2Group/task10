@@ -6,8 +6,9 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import java.util.List;
 
-public interface ProfessorServ {
+public interface ProfessorService {
 
+    Professor getProfessorByEmail(String Email);
 
     List<Course> getMyCourses(Professor professor);
 
@@ -21,9 +22,9 @@ public interface ProfessorServ {
     List<Solution> getAllReadySolutions(Task task);
 
 
-    void addTasks(Course course, Task task);
+    Task addTask(Course course, String title, String description);
 
-    void updateTask(Task task, String title, String description);
+    Task updateTask(Task task, String title, String description);
 
     void deleteTask(Task task) throws EntityNotFoundException;
 

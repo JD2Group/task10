@@ -6,17 +6,16 @@ import org.example.pojo.Course;
 import org.example.pojo.Solution;
 import org.example.pojo.Student;
 import org.example.pojo.Task;
-import org.example.servise.StudentServ;
+import org.example.servise.StudentService;
 
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import java.util.List;
 
 @Getter
-public class StudentServiceImpl extends ParrentService implements StudentServ {
+public class StudentServiceImpl extends ParrentService implements StudentService {
 
     @Override
-    public Student getByEmail(String email) {
+    public Student getStudentByEmail(String email) {
 
         return getStudentDao().getByEmail(email);
     }
@@ -30,7 +29,7 @@ public class StudentServiceImpl extends ParrentService implements StudentServ {
     @Override
     public List<Course> getMyCourses(Student student) throws NoResultException {
 
-        return getStudentDao().readAllByStudentId(student.getId());
+        return getStudentDao().readAllCoursesByStudentId(student.getId());
     }
 
     @Override
@@ -56,7 +55,7 @@ public class StudentServiceImpl extends ParrentService implements StudentServ {
     @Override
     public List<Task> getAllMyTasks(Student student) throws NoResultException {
 
-        return getTaskDao().readAllByStudentId(student.getId());
+        return getStudentDao().readTasksByStudentId(student.getId());
     }
 
     @Override
@@ -64,13 +63,12 @@ public class StudentServiceImpl extends ParrentService implements StudentServ {
 
         Solution solution;
         try {
-            solution = getSolutionDao().getByStudentTask(student, task);
-        } catch (EntityNotFoundException e) {
+            solution = getSolutionDao().getByStudentTask(student.getId(), task.getId());
+        } catch (NoResultException e) {
             solution = getSolutionDao().create(Solution.builder()
                                                    .task(task)
                                                    .student(student)
                                                    .build());
-            e.printStackTrace();
         }
 
 
