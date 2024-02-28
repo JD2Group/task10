@@ -4,7 +4,7 @@ import org.example.dao.*;
 import org.example.dao.impl.*;
 
 
-public class ParrentService {
+public class ParentService {
 
     private static StudentDao studentDao = new StudentDaoImpl();
     private static CourseDao courseDao = new CourseDaoImpl();

@@ -1,50 +1,53 @@
 package org.example.service.impl;
 
+import org.apache.log4j.Logger;
 import org.example.pojo.Course;
 import org.example.pojo.Professor;
 import org.example.pojo.Student;
 import org.example.service.AdminService;
-import org.hibernate.PropertyValueException;
-import org.hibernate.exception.ConstraintViolationException;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdminServiceImpl extends ParrentService implements AdminService {
+import static org.example.utils.Constants.OBJECT_CREATED_MESSAGE;
+
+public class AdminServiceImpl extends ParentService implements AdminService {
+    private final Logger log = Logger.getLogger(AdminServiceImpl.class);
 
     @Override
-    public Professor createProfessorAccount(String name, String surname, String email) throws ConstraintViolationException, PropertyValueException {
+    public Professor createProfessorAccount(String name, String surname, String email) {
 
         Professor professor = Professor.builder()
-                                  .name(name)
-                                  .surname(surname)
-                                  .email(email)
-                                  .build();
-
+                .name(name)
+                .surname(surname)
+                .email(email)
+                .build();
+        log.info(String.format(OBJECT_CREATED_MESSAGE, professor));
         return getProfessorDao().create(professor);
     }
 
     @Override
-    public Student createStudentAccount(String name, String surname, String email) throws ConstraintViolationException, PropertyValueException {
+    public Student createStudentAccount(String name, String surname, String email) {
 
         Student student = Student.builder()
-                              .name(name)
-                              .surname(surname)
-                              .email(email)
-                              .build();
+                .name(name)
+                .surname(surname)
+                .email(email)
+                .build();
+        log.info(String.format(OBJECT_CREATED_MESSAGE, student));
         return getStudentDao().create(student);
     }
 
     @Override
-    public Professor getProfessorByEmail(String email) throws NoResultException {
+    public Professor getProfessorByEmail(String email) {
 
         return getProfessorDao().getByEmail(email);
     }
 
     @Override
-    public Student getStudentByEmail(String email) throws NoResultException {
+    public Student getStudentByEmail(String email) {
 
         return getStudentDao().getByEmail(email);
     }
@@ -95,40 +98,36 @@ public class AdminServiceImpl extends ParrentService implements AdminService {
     public Course createCourse(String tittle, Professor professor) {
 
         Course course = Course.builder()
-                            .title(tittle)
-                            .professor(professor)
-                            .build();
+                .title(tittle)
+                .professor(professor)
+                .build();
+
+        log.info(String.format(OBJECT_CREATED_MESSAGE, course));
         return getCourseDao().create(course);
     }
 
     @Override
     public void updateCourse(Course course, Professor professor) {
 
-        if (course != null) {
-            course.setProfessor(professor);
-            getCourseDao().update(course);
-        }
+        course.setProfessor(professor);
+        getCourseDao().update(course);
     }
 
     @Override
     public void updateCourse(Course course, String tittle) {
 
-        if (course != null) {
-            course.setTitle(tittle);
-            getCourseDao().update(course);
-        }
+        course.setTitle(tittle);
+        getCourseDao().update(course);
     }
 
     @Override
     public void deleteCourse(Course course) throws EntityNotFoundException {
 
-        if (course != null) {
-            getCourseDao().delete(course.getId());
-        }
+        getCourseDao().delete(course.getId());
     }
 
     @Override
-    public List<Course> getCourseByTitleAndProfEmail(String title, String email) throws NoResultException {
+    public List<Course> getCoursesByTitleAndProfEmail(String title, String email)  {
 
         return getCourseDao().getCourseByTitleAndEmail(title, email);
     }

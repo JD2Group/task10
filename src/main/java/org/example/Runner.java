@@ -3,13 +3,15 @@ package org.example;
 import org.example.dao.impl.SolutionDaoImpl;
 import org.example.excepion.Exceptions;
 import org.example.pojo.*;
-import org.example.servise.AdminService;
-import org.example.servise.ProfessorService;
-import org.example.servise.StudentService;
-import org.example.servise.impl.AdminServiceImpl;
-import org.example.servise.impl.ProfessorServiceImpl;
-import org.example.servise.impl.StudentServiceImpl;
+import org.example.service.AdminService;
+import org.example.service.ProfessorService;
+import org.example.service.StudentService;
+import org.example.service.impl.AdminServiceImpl;
+import org.example.service.impl.ProfessorServiceImpl;
+import org.example.service.impl.StudentServiceImpl;
 import org.example.utils.Generator;
+import org.example.utils.HibernateUtil;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -57,6 +59,8 @@ public class Runner {
         printProfessorService(professor);
         printStudentService(students.get(0));
         deleteAccounts(professor, students.get(0), courses.get(0));
+
+        HibernateUtil.closeFactory();
     }
 
     public static void printStudentService(Student student) {
@@ -141,9 +145,9 @@ public class Runner {
         List<Professor> professors = ADMIN_SERVICE.getAllProfessors();
         List<Student> students = ADMIN_SERVICE.getAllStudents();
         List<Course>  courses = ADMIN_SERVICE.getAllCourses();
-        System.out.println(String.format(OBJECT_DELETED, professor.toString(), !professors.contains(professor)));
-        System.out.println(String.format(OBJECT_DELETED, student.toString(), !students.contains(student)));
-        System.out.println(String.format(OBJECT_DELETED, course.toString(), !courses.contains(course)));
+        System.out.printf((OBJECT_DELETED) + "%n", professor.toString(), !professors.contains(professor));
+        System.out.printf((OBJECT_DELETED) + "%n", student.toString(), !students.contains(student));
+        System.out.printf((OBJECT_DELETED) + "%n", course.toString(), !courses.contains(course));
         ADMIN_SERVICE.clearBaseFromSolutionsWithoutStudentIdAndTaskId();
     }
 
