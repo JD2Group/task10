@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet author="Timonov_Timon" id="01">
+        <createTable tableName="students_courses">
+            <column name="student_id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+                <!-- <constraints primaryKey="true"
+                              foreignKeyName="FKr16q8s9m6kr7xupi4fw9iqpgl"
+                              referencedTableName="students"
+                              referencedColumnNames="id"
+                              nullable="false"/>-->
+            </column>
+            <column name="course_id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+                <!--<constraints primaryKey="true"
+                             foreignKeyName="FKcc42107lsifo5rjyjlhdu6i6u"
+                             referencedTableName="courses"
+                             referencedColumnNames="id"
+                             nullable="false"/>-->
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="students_courses"/>
+        </rollback>
+    </changeSet>
+
+
+    <changeSet author="Timonov_Timon" id="02">
+        <addForeignKeyConstraint
+                baseTableName="students_courses"
+                baseColumnNames="student_id"
+                constraintName="FKr16q8s9m6kr7xupi4fw9iqpgl"
+                referencedTableName="students"
+                referencedColumnNames="id"/>
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="FKr16q8s9m6kr7xupi4fw9iqpgl"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="Timonov_Timon" id="03">
+        <addForeignKeyConstraint
+                baseTableName="students_courses"
+                baseColumnNames="course_id"
+                constraintName="FKcc42107lsifo5rjyjlhdu6i6u"
+                referencedTableName="courses"
+                referencedColumnNames="id"/>
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="FKcc42107lsifo5rjyjlhdu6i6u"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
+
+
+        <!--create table students_courses
+        (
+            student_id bigint not null,
+            course_id  bigint not null,
+            primary key (student_id, course_id),
+            constraint FKcc42107lsifo5rjyjlhdu6i6u
+                foreign key (course_id) references courses (id),
+            constraint FKr16q8s9m6kr7xupi4fw9iqpgl
+                foreign key (student_id) references students (id)
+        );-->
