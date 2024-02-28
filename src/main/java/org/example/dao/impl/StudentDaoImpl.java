@@ -1,5 +1,6 @@
 package org.example.dao.impl;
 
+import org.apache.log4j.Logger;
 import org.example.dao.StudentDao;
 import org.example.pojo.Course;
 import org.example.pojo.Student;
@@ -13,10 +14,14 @@ import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.example.utils.Constants.*;
+
 public class StudentDaoImpl extends DaoImpl<Student, Long> implements StudentDao {
 
     public static final String GET_STUDENT_BY_EMAIL = "SELECT s FROM Student s WHERE s.email='%s' AND s.id NOT LIKE '%d'";
     public static final String GET_ALL_STUDENTS = "SELECT s FROM Student s WHERE s.id NOT LIKE '%d'";
+    private final Logger log = Logger.getLogger(StudentDaoImpl.class);
+
 
     public StudentDaoImpl() {
 
@@ -25,28 +30,27 @@ public class StudentDaoImpl extends DaoImpl<Student, Long> implements StudentDao
 
     @Override
     public Student create(Student student) throws ConstraintViolationException, PropertyValueException {
-
-        return super.create(student);
+        super.create(student);
+        return student;
     }
 
     @Override
     public void delete(Long id) throws EntityNotFoundException {
 
-        if (id != null) {
-            if (!StudentDao.DELETED_STUDENT_ID.equals(id)) {
-                Student student = super.read(id);
-                Student deleted = super.read(StudentDao.DELETED_STUDENT_ID);
-                if (student != null) {
-                    getEm().getTransaction().begin();
-                    getEm().refresh(student);
-                    student.getSolutions().stream()
-                        .peek(solution -> solution.setStudent(deleted))
-                        .forEach(getEm()::merge);
-                    getEm().remove(student);
-                    getEm().getTransaction().commit();
-                } else {
-                    throw new EntityNotFoundException();
-                }
+        if (!id.equals(StudentDao.DELETED_STUDENT_ID)) {
+            Student student = super.read(id);
+            Student deleted = super.read(StudentDao.DELETED_STUDENT_ID);
+            if (student != null) {
+                getEm().getTransaction().begin();
+                getEm().refresh(student);
+                student.getSolutions().stream()
+                    .peek(solution -> solution.setStudent(deleted))
+                    .forEach(getEm()::merge);
+                getEm().remove(student);
+                commitTransaction(DELETE_MESSAGE, DELETE_FAILED_MESSAGE, student);
+            } else {
+                log.error(String.format(ENTITY_NOT_FOUND_MESSAGE,id));
+                throw new EntityNotFoundException();
             }
         }
     }
@@ -61,39 +65,26 @@ public class StudentDaoImpl extends DaoImpl<Student, Long> implements StudentDao
     }
 
     @Override
-    public List<Course> readAllCoursesByStudentId(Long studentId) throws EntityNotFoundException {
+    public List<Course> readAllCoursesByStudentId(Long studentId) throws NoResultException {
 
-        List<Course> list = new ArrayList<>();
-        if (studentId != null) {
-            Student student = read(studentId);
-            list.addAll(student.getCourses());
-        }
-        return list;
+        Student student = read(studentId);
+        return new ArrayList<>(student.getCourses());
     }
 
     @Override
     public List<Task> readTasksByStudentId(Long studentId) throws NoResultException {
 
         List<Task> taskList = new ArrayList<>();
-        if (studentId != null) {
-            List<Course> courses = readAllCoursesByStudentId(studentId);
-            courses.forEach(course -> taskList.addAll(course.getTasks()));
-            return taskList;
-        } else {
-            throw new NoResultException();
-        }
+        List<Course> courses = readAllCoursesByStudentId(studentId);
+        courses.forEach(course -> taskList.addAll(course.getTasks()));
+        return taskList;
     }
 
     @Override
     public List<Student> getAllStudentsByCourse(Course course) {
 
-        if (course != null) {
-            return new ArrayList<>(course.getStudents());
-        } else {
-            throw new NoResultException();
-        }
+        return new ArrayList<>(course.getStudents());
     }
-
 
     @Override
     protected String getAllSqlString() {

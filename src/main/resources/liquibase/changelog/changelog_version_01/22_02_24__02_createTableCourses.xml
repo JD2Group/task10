@@ -38,13 +38,13 @@
 
     <changeSet author="Timonov_Timon" id="03">
         <insert tableName="courses">
-            <column name="id" value="1"/>
+<!--            <column name="id" value="1"/>-->
             <column name="title" value="This course has been deleted."/>
         </insert>
         <rollback>
             <delete tableName="courses">
                 <whereParams>
-                    <param name="id" value="1"/>
+<!--                    <param name="id" value="1"/>-->
                     <param name="title" value="This course has been deleted."/>
                 </whereParams>
             </delete>

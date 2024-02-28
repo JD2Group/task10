@@ -38,7 +38,7 @@ public class Course implements Serializable {
     private LocalDateTime createdDate;
 
     @Builder.Default
-    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private Set<Task> tasks = new HashSet<>();
 
     @Builder.Default
@@ -47,7 +47,7 @@ public class Course implements Serializable {
 
     public void setProfessor(Professor professor) throws PropertyValueException {
 
-        if (this.id != CourseDao.DELETED_COURSE_ID) {
+        if (CourseDao.DELETED_COURSE_ID != this.id) {
             this.professor = professor;
             if (professor != null) {
                 professor.getCourses().add(this);

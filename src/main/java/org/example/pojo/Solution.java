@@ -7,7 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -49,11 +49,11 @@ public class Solution implements Serializable {
 
     @Column(updatable = false)
     @CreationTimestamp
-    private LocalDateTime createdDate;
+    private Timestamp createdDate;
 
     @Column(insertable = false)
     @UpdateTimestamp
-    private LocalDateTime updatedDate;
+    private Timestamp updatedDate;
 
     public void setStudent(Student student) {
         this.student = student;

@@ -1,3 +1,5 @@
 /.idea/
 /target/
-/src/main/resources/META-INF/persistence.xml
+/src/main/resources/script.sql
+/src/main/java/org/example/Test.java
+/src/test/resources/META-INF/

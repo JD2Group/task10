@@ -38,7 +38,7 @@
 
     <changeSet author="Timonov_Timon" id="03">
         <insert tableName="tasks">
-            <column name="id" value="1"/>
+<!--            <column name="id" value="1"/>-->
             <column name="description" value="The task has been deleted"/>
             <column name="title" value="Canceled task"/>
         </insert>

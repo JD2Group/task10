@@ -8,7 +8,6 @@ import org.example.pojo.Task;
 
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
 import java.util.List;
 
 public class SolutionDaoImpl extends DaoImpl<Solution, Long> implements SolutionDao {
@@ -24,27 +23,19 @@ public class SolutionDaoImpl extends DaoImpl<Solution, Long> implements Solution
     @Override
     public Solution getByStudentTask(Long studentId, Long taskId) throws NoResultException {
 
-        if (studentId != null && taskId != null) {
-            String sqlQuery = String.format(GET_SOLUTION_BY_STUDENT_AND_TASK,
-                studentId, taskId);
-            TypedQuery<Solution> query = getEm().createQuery(sqlQuery, Solution.class);
-            return query.getSingleResult();
-        } else {
-            throw new NoResultException();
-        }
+        String sqlQuery = String.format(GET_SOLUTION_BY_STUDENT_AND_TASK,
+            studentId, taskId);
+        TypedQuery<Solution> query = getEm().createQuery(sqlQuery, Solution.class);
+        return query.getSingleResult();
     }
 
     @Override
     public List<Solution> getAllReadyByTask(Task task) {
 
-        List<Solution> list = new ArrayList<>();
-        if (task != null) {
-            String sqlQuery = String.format(GET_SOLUTIONS_BY_TASK,
-                task.getId());
-            TypedQuery<Solution> query = getEm().createQuery(sqlQuery, Solution.class);
-            list = query.getResultList();
-        }
-        return list;
+        String sqlQuery = String.format(GET_SOLUTIONS_BY_TASK,
+            task.getId());
+        TypedQuery<Solution> query = getEm().createQuery(sqlQuery, Solution.class);
+        return query.getResultList();
     }
 
     @Override

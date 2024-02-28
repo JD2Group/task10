@@ -26,7 +26,7 @@
 
     <changeSet author="Timonov_Timon" id="02">
         <insert tableName="students">
-            <column name="id" value="1"/>
+<!--            <column name="id" value="1"/>-->
             <column name="name" value="Deleted"/>
             <column name="surname" value="Deleted"/>
             <column name="email" value="Deleted"/>
@@ -34,7 +34,7 @@
         <rollback>
             <delete tableName="students">
                 <whereParams>
-                    <param name="id" value="1"/>
+<!--                    <param name="id" value="1"/>-->
                     <param name="email" value="Deleted"/>
                 </whereParams>
             </delete>
