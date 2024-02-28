@@ -7,21 +7,36 @@
     <changeSet author="Timonov_Timon" id="01">
         <createTable tableName="tasks">
             <column name="id" type="bigint" autoIncrement="true">
-                <constraints nullable="false" primaryKey="true" unique="true"/>
+                <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="createdDate" type="datetime(6)" />
+            <column name="createdDate" type="datetime(6)"/>
             <column name="description" type="longtext"/>
             <column name="title" type="varchar(255)"/>
             <column name="course_id" type="bigint">
-                <constraints foreignKeyName="FKopldg47bgaarlampi2f6wees3"
+                <!--<constraints foreignKeyName="FKopldg47bgaarlampi2f6wees3"
                              referencedTableName="courses"
                              referencedColumnNames="id"
-                             nullable="true"/>
+                             nullable="true"/>-->
             </column>
         </createTable>
+        <rollback>
+            <dropTable tableName="tasks"/>
+        </rollback>
     </changeSet>
 
     <changeSet author="Timonov_Timon" id="02">
+        <addForeignKeyConstraint
+                baseTableName="tasks"
+                baseColumnNames="course_id"
+                constraintName="FKopldg47bgaarlampi2f6wees3"
+                referencedTableName="courses"
+                referencedColumnNames="id"/>
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="FKopldg47bgaarlampi2f6wees3"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="Timonov_Timon" id="03">
         <insert tableName="tasks">
 <!--            <column name="id" value="1"/>-->
             <column name="description" value="The task has been deleted"/>
