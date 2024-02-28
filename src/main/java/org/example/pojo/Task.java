@@ -33,7 +33,7 @@ public class Task implements Serializable {
     private LocalDateTime createdDate;
 
     @Column
-    @Type(type="text")
+    @Type(type = "text")
     private String description;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -43,12 +43,4 @@ public class Task implements Serializable {
     @Builder.Default
     @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
     private Set<Solution> solutions = new HashSet<>();
-
-
-    public void setCourse(Course course) {
-        this.course = course;
-        if (course != null) {
-            course.getTasks().add(this);
-        }
-    }
 }
