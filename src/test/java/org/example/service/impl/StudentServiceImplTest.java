@@ -1,4 +1,4 @@
-package org.example.servise.impl;
+package org.example.service.impl;
 
 import org.example.dao.CourseDao;
 import org.example.dao.SolutionDao;
@@ -10,8 +10,8 @@ import org.example.dao.impl.StudentDaoImpl;
 import org.example.dao.impl.TaskDaoImpl;
 import org.example.excepion.Exceptions;
 import org.example.pojo.*;
-import org.example.servise.ProfessorService;
-import org.example.servise.StudentService;
+import org.example.service.ProfessorService;
+import org.example.service.StudentService;
 import org.example.utils.MockUtils;
 import org.example.utils.QueryManager;
 import org.junit.jupiter.api.*;
