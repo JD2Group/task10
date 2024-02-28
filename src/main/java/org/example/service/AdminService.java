@@ -1,4 +1,4 @@
-package org.example.servise;
+package org.example.service;
 
 import org.example.pojo.Course;
 import org.example.pojo.Professor;

@@ -1,4 +1,4 @@
-package org.example.servise.impl;
+package org.example.service.impl;
 
 import lombok.Getter;
 import org.example.excepion.Exceptions;

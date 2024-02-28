@@ -1,9 +1,9 @@
-package org.example.servise.impl;
+package org.example.service.impl;
 
 import org.example.pojo.Course;
 import org.example.pojo.Professor;
 import org.example.pojo.Student;
-import org.example.servise.AdminService;
+import org.example.service.AdminService;
 import org.hibernate.PropertyValueException;
 import org.hibernate.exception.ConstraintViolationException;
 
