@@ -1,4 +1,4 @@
-package org.example.servise;
+package org.example.service;
 
 import org.example.pojo.Course;
 import org.example.pojo.Professor;
@@ -35,9 +35,9 @@ public interface AdminService {
 
     Course createCourse(String tittle, Professor professor);
 
-    void updateCourse(Course course, Professor professor);
+    Course updateCourse(Course course, Professor professor);
 
-    void updateCourse(Course course, String tittle);
+    Course updateCourse(Course course, String tittle);
 
     void deleteCourse(Course course);
 

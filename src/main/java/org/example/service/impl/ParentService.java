@@ -1,4 +1,4 @@
-package org.example.servise.impl;
+package org.example.service.impl;
 
 import org.example.dao.*;
 import org.example.dao.impl.*;

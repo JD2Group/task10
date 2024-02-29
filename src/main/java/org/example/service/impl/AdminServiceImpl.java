@@ -1,10 +1,10 @@
-package org.example.servise.impl;
+package org.example.service.impl;
 
 import org.apache.log4j.Logger;
 import org.example.pojo.Course;
 import org.example.pojo.Professor;
 import org.example.pojo.Student;
-import org.example.servise.AdminService;
+import org.example.service.AdminService;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
@@ -107,17 +107,19 @@ public class AdminServiceImpl extends ParentService implements AdminService {
     }
 
     @Override
-    public void updateCourse(Course course, Professor professor) {
+    public Course updateCourse(Course course, Professor professor) {
 
         course.setProfessor(professor);
         getCourseDao().update(course);
+        return course;
     }
 
     @Override
-    public void updateCourse(Course course, String tittle) {
+    public Course updateCourse(Course course, String tittle) {
 
         course.setTitle(tittle);
         getCourseDao().update(course);
+        return course;
     }
 
     @Override

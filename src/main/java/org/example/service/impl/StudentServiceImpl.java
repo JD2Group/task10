@@ -1,4 +1,4 @@
-package org.example.servise.impl;
+package org.example.service.impl;
 
 import lombok.Getter;
 import org.apache.log4j.Logger;
@@ -7,7 +7,7 @@ import org.example.pojo.Course;
 import org.example.pojo.Solution;
 import org.example.pojo.Student;
 import org.example.pojo.Task;
-import org.example.servise.StudentService;
+import org.example.service.StudentService;
 
 import javax.persistence.NoResultException;
 import java.util.List;

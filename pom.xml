@@ -98,6 +98,9 @@
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>4.9.1</version>
+                <configuration>
+                    <propertyFile>src\main\resources\liquibase.properties</propertyFile>
+                </configuration>
                 <executions>
                     <execution>
                         <id>Mysql</id>
@@ -105,9 +108,6 @@
                         <goals>
                             <goal>update</goal>
                         </goals>
-                        <configuration>
-                            <propertyFile>src\main\resources\liquibase.properties</propertyFile>
-                        </configuration>
                     </execution>
                     <execution>
                         <id>H2</id>
@@ -145,6 +145,8 @@
                 <configuration>
                     <excludes>
                         <exclude>org/example/pojo/</exclude>
+                        <exclude>org/example/Runner.class</exclude>
+                        <exclude>org/example/utils/</exclude>
                     </excludes>
                 </configuration>
                 <executions>

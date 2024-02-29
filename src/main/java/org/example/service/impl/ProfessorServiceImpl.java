@@ -1,8 +1,8 @@
-package org.example.servise.impl;
+package org.example.service.impl;
 
 import org.apache.log4j.Logger;
 import org.example.pojo.*;
-import org.example.servise.ProfessorService;
+import org.example.service.ProfessorService;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
