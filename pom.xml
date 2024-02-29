@@ -145,6 +145,8 @@
                 <configuration>
                     <excludes>
                         <exclude>org/example/pojo/</exclude>
+                        <exclude>org/example/Runner.class</exclude>
+                        <exclude>org/example/utils/</exclude>
                     </excludes>
                 </configuration>
                 <executions>

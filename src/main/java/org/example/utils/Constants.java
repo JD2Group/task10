@@ -29,6 +29,20 @@ public final class Constants {
     public static final String STUDENT_CHECK_OUT_COURSE_MESSAGE = "Student %s check out course %s";
     public static final String SOLUTION_RESOLVED_MESSAGE = "Solution %s is resolved";
 
+    public static final String ALL_OBJECTS = "All %ss";
+    public static final String OBJECT_BY_EMAIL = "%s by email: ";
+    public static final String STUDENTS_BY_PROFESSOR = "Students by professor: ";
+    public static final String ALL_COURSES_BY_OBJECT = "All courses by %s: ";
+    public static final String ALL_TASKS_BY_STUDENT = "All tasks by student: ";
+    public static final String SOLUTION_BY_TASK_BEFORE = "Solution by task before: ";
+    public static final String READY_SOLUTION_BY_TASK = "Solution by task ready: %s :";
+    public static final String SOLUTION_FOR_REVIEW = "Solution for review";
+    public static final String SOLUTION_AFTER_REVIEW = "Solution after review";
+    public static final String OBJECT_BEFORE_UPDATE = "%s before update: ";
+    public static final String OBJECT_AFTER_UPDATE = "%s after update: ";
+    public static final String STUDENT_CHECK_OUT_COURSE = "Student check out course:";
+    public static final String STUDENT_CHECK_IN_COURSE = "Student check in course:";
+
     private Constants() {
     }
 }

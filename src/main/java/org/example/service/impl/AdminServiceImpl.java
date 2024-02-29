@@ -107,17 +107,19 @@ public class AdminServiceImpl extends ParentService implements AdminService {
     }
 
     @Override
-    public void updateCourse(Course course, Professor professor) {
+    public Course updateCourse(Course course, Professor professor) {
 
         course.setProfessor(professor);
         getCourseDao().update(course);
+        return course;
     }
 
     @Override
-    public void updateCourse(Course course, String tittle) {
+    public Course updateCourse(Course course, String tittle) {
 
         course.setTitle(tittle);
         getCourseDao().update(course);
+        return course;
     }
 
     @Override
