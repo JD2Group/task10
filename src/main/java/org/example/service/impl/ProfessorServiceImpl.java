@@ -6,6 +6,7 @@ import org.example.service.ProfessorService;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.example.utils.Constants.OBJECT_CREATED_MESSAGE;
@@ -34,8 +35,7 @@ public class ProfessorServiceImpl extends ParentService implements ProfessorServ
 
     @Override
     public List<Student> getAllStudents(Course course) {
-
-        return getStudentDao().getAllStudentsByCourse(course);
+        return new ArrayList<>(course.getStudents());
     }
 
     @Override
@@ -55,10 +55,10 @@ public class ProfessorServiceImpl extends ParentService implements ProfessorServ
     public Task addTask(Course course, String title, String description) {
 
         Task task = Task.builder()
-                        .title(title)
-                        .description(description)
-                        .course(course)
-                        .build();
+                .title(title)
+                .description(description)
+                .course(course)
+                .build();
         log.info(String.format(OBJECT_CREATED_MESSAGE, task));
         return getTaskDao().update(task);
     }

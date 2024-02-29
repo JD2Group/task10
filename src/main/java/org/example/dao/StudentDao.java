@@ -16,6 +16,4 @@ public interface StudentDao extends DAO<Student, Long> {
     List<Course> readAllCoursesByStudentId(Long studentId) throws NoResultException;
 
     List<Task> readTasksByStudentId(Long studentId) throws NoResultException;
-
-    List<Student> getAllStudentsByCourse(Course course);
 }

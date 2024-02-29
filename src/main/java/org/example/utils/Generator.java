@@ -1,8 +1,19 @@
 package org.example.utils;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import static org.example.utils.Constants.*;
 
 public abstract class Generator {
+
+    public static List<String> generateStrings(String pattern) {
+        return IntStream.range(0, LIST_SIZE)
+                .mapToObj(i -> String.format(pattern, RANDOM.nextInt()))
+                .collect(Collectors.toList());
+    }
+
 
     public static String generateTitle() {
         return String.format(RANDOM_TITLE, RANDOM.nextInt());

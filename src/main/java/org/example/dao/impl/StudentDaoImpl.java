@@ -81,12 +81,6 @@ public class StudentDaoImpl extends DaoImpl<Student, Long> implements StudentDao
     }
 
     @Override
-    public List<Student> getAllStudentsByCourse(Course course) {
-
-        return new ArrayList<>(course.getStudents());
-    }
-
-    @Override
     protected String getAllSqlString() {
 
         return String.format(GET_ALL_STUDENTS, StudentDao.DELETED_STUDENT_ID);
