@@ -2,13 +2,12 @@ package org.example;
 
 import org.example.excepion.Exceptions;
 import org.example.pojo.*;
-import org.example.service.AdminService;
-import org.example.service.ProfessorService;
-import org.example.service.StudentService;
-import org.example.service.impl.AdminServiceImpl;
-import org.example.service.impl.ProfessorServiceImpl;
-import org.example.service.impl.StudentServiceImpl;
-import org.example.utils.CustomConsumer;
+import org.example.servise.AdminService;
+import org.example.servise.ProfessorService;
+import org.example.servise.StudentService;
+import org.example.servise.impl.AdminServiceImpl;
+import org.example.servise.impl.ProfessorServiceImpl;
+import org.example.servise.impl.StudentServiceImpl;
 import org.example.utils.Generator;
 import org.example.utils.Printer;
 
@@ -25,138 +24,153 @@ public class Runner {
     private static final ProfessorService PROFESSOR_SERVICE = new ProfessorServiceImpl();
 
     public static void main(String[] args) {
-        //admin service (save professors, courses, students)
-        saveInitialData();
+        //adm
+        saveProfessorsStudentsCourses();
 
-        List<Course> courses = getObject(ADMIN_SERVICE::getAllCourses, String.format(ALL_OBJECTS, Course.class.getSimpleName()));
-        List<Professor> professors = getObject(ADMIN_SERVICE::getAllProfessors, String.format(ALL_OBJECTS, Professor.class.getSimpleName()));
-        List<Student> students = getObject(ADMIN_SERVICE::getAllStudents, String.format(ALL_OBJECTS, Student.class.getSimpleName()));
+        List<Course> courses = getObject(ADMIN_SERVICE::getAllCourses, "All courses");
+        List<Professor> professors = getObject(ADMIN_SERVICE::getAllProfessors, "All professors");
+        List<Student> students = getObject(ADMIN_SERVICE::getAllStudents, "All students");
 
-        //admin service (set professors to courses)
-        applyChanges(ADMIN_SERVICE::updateCourse, courses, professors);
-        //select a random professor and student
+        setProfessorsToCourses(professors, courses);
+
         String randomProfessorsEmail = professors.get(RANDOM.nextInt(professors.size())).getEmail();
         String randomStudentEmail = students.get(RANDOM.nextInt(students.size())).getEmail();
-        //admin service (find a random professor, student and all courses in the database)
+
         findDataWithAdminService(randomProfessorsEmail, randomStudentEmail);
 
-        //student service (enroll students in courses)
-        applyChanges(STUDENT_SERVICE::checkInCourse, courses, students);
+        //st
+        checkInStudentsToCourses(students, courses);
 
-        //select random professor, student and course
+        //adm
         Professor randomProfessor = professors.get(RANDOM.nextInt(professors.size()));
         Course randomCourse = courses.get(RANDOM.nextInt(courses.size()));
         Student randomStudent = students.get(RANDOM.nextInt(students.size()));
 
-        //student service (find student by email)
-        Printer.printObjects(OBJECT_BY_EMAIL + randomStudent.getEmail(),
+        //st
+        Printer.printObjects("Student by email: " + randomStudent.getEmail(),
                 STUDENT_SERVICE.getStudentByEmail(randomStudent.getEmail()));
 
-        //professor service (get professor's students and select random student)
+        Printer.printObjects("All courses", STUDENT_SERVICE.getAllCourses());
+
+        //pr
         List<Student> professorStudents = getObject(() -> PROFESSOR_SERVICE.getAllStudents(randomCourse),
-                STUDENTS_BY_PROFESSOR);
+                "Students by professor: ");
+
+        //st
         Student student = professorStudents.get(RANDOM.nextInt(professorStudents.size()));
 
-        //student service (get student courses and choose random course)
-        List<Course> studentCourses = getObject(() -> STUDENT_SERVICE.getMyCourses(student), String.format(ALL_COURSES_BY_OBJECT, Student.class.getSimpleName()));
+        List<Course> studentCourses = getObject(() -> STUDENT_SERVICE.getMyCourses(student), "All courses by student: ");
         Course studentCourse = studentCourses.get(RANDOM.nextInt(studentCourses.size()));
-        //student service (check the possibility of enrolling in a course and unsubscribing from it)
-        checkInCheckOutFromCourse(studentCourse, student);
 
-        //professor service (add tasks to courses)
         addTasksToCourses(studentCourses);
 
-        //student service (get all the student's tasks and select a random task)
-        List<Task> studentTasks = getObject(() -> STUDENT_SERVICE.getAllMyTasks(student), ALL_TASKS_BY_STUDENT + student.getEmail());
+        //pr
+        checkInCheckOutCourse(studentCourse, student);
+
+        List<Task> studentTasks = getObject(() -> STUDENT_SERVICE.getAllMyTasks(student), "All tasks by student: " + student.getEmail());
         Task randomTask = studentTasks.get(RANDOM.nextInt(studentTasks.size()));
-        //student service (solve task)
-        Solution solution = getObject(() -> STUDENT_SERVICE.getSolution(randomTask, student), SOLUTION_BY_TASK_BEFORE);
-        solveTask(solution);
-        Printer.printObjects(String.format(READY_SOLUTION_BY_TASK, randomTask.getTitle()) + solution.getResponse(), solution);
 
-        //professor service (check the solved task)
-        Solution solutionForReview = getObject(() -> PROFESSOR_SERVICE.getSolution(student, randomTask), SOLUTION_FOR_REVIEW);
+        Solution solution = getObject(() -> STUDENT_SERVICE.getSolution(randomTask, student),
+                "Solution by task before: ");
+        solveSolution(solution);
+        Printer.printObjects("Solution by task ready: " + randomTask.getTitle() + ": " + solution.getResponse(), solution);
+
+        //pr
+        Solution solutionForReview = getObject(() -> PROFESSOR_SERVICE.getSolution(student, randomTask), "Solution for review");
         PROFESSOR_SERVICE.review(solutionForReview, MARK, Generator.generateReview());
-        Printer.printObjects(SOLUTION_AFTER_REVIEW, solutionForReview);
+        Printer.printObjects("Solution after review", solutionForReview);
 
-        //admin service (update random course)
+        deleteObject(PROFESSOR_SERVICE::deleteTask, randomTask, () -> PROFESSOR_SERVICE.getAllTasks(randomTask.getCourse()));
+
+        //adm
         updateCourse(randomCourse, randomProfessor);
-        //admin service/professor (delete course, professor, student and task)
-        deleteObjects(randomProfessor, randomCourse, randomStudent, randomTask);
+        deleteObject(ADMIN_SERVICE::deleteAccount, randomProfessor, ADMIN_SERVICE::getAllProfessors);
+        deleteObject(ADMIN_SERVICE::deleteAccount, randomStudent, ADMIN_SERVICE::getAllStudents);
+        deleteObject(ADMIN_SERVICE::deleteCourse, randomCourse, ADMIN_SERVICE::getAllCourses);
     }
 
-    public static void saveInitialData() {
+    public static void saveProfessorsStudentsCourses() {
         List<String> professorEmails = Generator.generateStrings(RANDOM_EMAIL);
-        save(professorEmails, Professor.class);
+        saveProfessors(professorEmails);
 
         List<String> studentEmails = Generator.generateStrings(RANDOM_EMAIL);
-        save(studentEmails, Student.class);
+        saveStudents(studentEmails);
 
         List<String> courseTitles = Generator.generateStrings(RANDOM_TITLE);
-        save(courseTitles, Course.class);
+        saveCourses(courseTitles);
     }
 
     private static void findDataWithAdminService(String professorsEmail, String studentEmail) {
         Professor randomProfessor = getObject(() -> ADMIN_SERVICE.getProfessorByEmail(professorsEmail),
-                String.format(OBJECT_BY_EMAIL, Professor.class.getSimpleName()) + professorsEmail);
+                "Professor with email: %s :" + professorsEmail + " : ");
 
         getObject(() -> ADMIN_SERVICE.getStudentByEmail(studentEmail),
-                String.format(OBJECT_BY_EMAIL, Student.class.getSimpleName()) + studentEmail);
+                "Student with email: " + studentEmail + " : ");
 
-        getObject(() -> ADMIN_SERVICE.getAllCourses(randomProfessor), String.format(ALL_COURSES_BY_OBJECT, Professor.class.getSimpleName()));
+        getObject(() -> ADMIN_SERVICE.getAllCourses(randomProfessor), "All courses by professor: ");
     }
 
     private static void updateCourse(Course course, Professor professor) {
-        updateObject(() -> ADMIN_SERVICE.updateCourse(course, professor), course, Course.class);
+        System.out.println("Course before update: " + course);
+        ADMIN_SERVICE.updateCourse(course, professor);
+        System.out.println("Course after update: " + course);
+
     }
 
     public static void addTasksToCourses(List<Course> professorCourses) {
         Course randomCourse = professorCourses.get(RANDOM.nextInt(professorCourses.size()));
 
-        save(professorCourses, Task.class);
+        saveTasks(professorCourses);
 
         Task newTask = PROFESSOR_SERVICE.addTask(randomCourse, Generator.generateTitle(), Generator.generateDescription());
         updateTask(newTask);
     }
 
     private static void updateTask(Task task) {
-        updateObject(() -> PROFESSOR_SERVICE.updateTask(task, Generator.generateTitle(), Generator.generateDescription()),
-                task, Task.class);
+        Printer.printObjects("Task before update: ", task);
+        Task newTaskAfterUpdate = PROFESSOR_SERVICE.updateTask(task, Generator.generateTitle(), Generator.generateDescription());
+        Printer.printObjects("Task after update: ", newTaskAfterUpdate);
+
     }
 
-    public static void checkInCheckOutFromCourse(Course course, Student student) {
+    public static void saveTasks(List<Course> courses) {
+        IntStream.range(0, courses.size())
+                .forEach(i -> PROFESSOR_SERVICE.addTask(courses.get(i), Generator.generateTitle(), Generator.generateDescription()));
+    }
+
+    public static void checkInCheckOutCourse(Course course, Student student) {
         STUDENT_SERVICE.checkOutCourse(course, student);
-        Printer.printObjects(STUDENT_CHECK_OUT_COURSE, !STUDENT_SERVICE.getMyCourses(student).contains(course));
+        Printer.printObjects("Student check out course:", !STUDENT_SERVICE.getMyCourses(student).contains(course));
 
         STUDENT_SERVICE.checkInCourse(course, student);
-        Printer.printObjects(STUDENT_CHECK_IN_COURSE, STUDENT_SERVICE.getMyCourses(student).contains(course));
+        Printer.printObjects("Student check in course:", STUDENT_SERVICE.getMyCourses(student).contains(course));
     }
 
-    public static <T> void save(List<T> list, Class<?> clazz) {
-        list.forEach(o -> selectSaveMethod(o, clazz));
+    public static void saveProfessors(List<String> emails) {
+        IntStream.range(0, emails.size())
+                .forEach(i -> ADMIN_SERVICE.createProfessorAccount(Generator.generateName(),
+                        Generator.generateSurname(), emails.get(i)));
     }
 
-    private static <T> void selectSaveMethod(T object, Class<?> clazz) {
-        if (clazz == Professor.class) {
-            ADMIN_SERVICE.createProfessorAccount(Generator.generateName(), Generator.generateSurname(), (String) object);
-        } else if (clazz == Student.class) {
-            ADMIN_SERVICE.createStudentAccount(Generator.generateName(), Generator.generateSurname(), (String) object);
-        } else if (clazz == Course.class) {
-            ADMIN_SERVICE.createCourse(Generator.generateTitle(), null);
-        } else if (clazz == Task.class) {
-            PROFESSOR_SERVICE.addTask((Course) object, Generator.generateTitle(), Generator.generateDescription());
-        }
+    public static void saveStudents(List<String> emails) {
+        IntStream.range(0, emails.size())
+                .forEach(i -> ADMIN_SERVICE.createStudentAccount(Generator.generateName(),
+                        Generator.generateSurname(), emails.get(i)));
     }
 
-    public static <T, R> void applyChanges(CustomConsumer<T, R> method, List<T> list1, List<R> list2) {
-        IntStream.range(0, list1.size())
-                .forEach(i -> method.accept(list1.get(i), list2.get(i)));
+    public static void saveCourses(List<String> titles) {
+        IntStream.range(0, titles.size())
+                .forEach(i -> ADMIN_SERVICE.createCourse(titles.get(i), null));
     }
 
-    public static <T> void updateObject(Supplier<T> method, T object, Class<T> clazz) {
-        Printer.printObjects(String.format(OBJECT_BEFORE_UPDATE, clazz.getSimpleName()), object);
-        T objectAfterUpdate = method.get();
-        Printer.printObjects(String.format(OBJECT_AFTER_UPDATE, clazz.getSimpleName()), objectAfterUpdate);
+    private static void setProfessorsToCourses(List<Professor> professors, List<Course> courses) {
+        IntStream.range(0, courses.size())
+                .forEach(i -> ADMIN_SERVICE.updateCourse(courses.get(i), professors.get(i)));
+    }
+
+    public static void checkInStudentsToCourses(List<Student> students, List<Course> courses) {
+        IntStream.range(0, students.size())
+                .forEach(i -> STUDENT_SERVICE.checkInCourse(courses.get(i), students.get(i)));
     }
 
     public static <T> T getObject(Supplier<T> method, String messageForPrint) {
@@ -171,18 +185,11 @@ public class Runner {
         System.out.println(String.format(OBJECT_DELETED, object.toString(), isObjectDeleted));
     }
 
-    private static void solveTask(Solution solution) {
+    private static void solveSolution(Solution solution) {
         try {
             STUDENT_SERVICE.solveTask(solution, true, Generator.generateResponse());
         } catch (Exceptions.SolutionIsResolvedException e) {
             e.printStackTrace();
         }
-    }
-
-    private static void deleteObjects(Professor randomProfessor, Course randomCourse, Student randomStudent, Task randomTask) {
-        deleteObject(ADMIN_SERVICE::deleteCourse, randomCourse, ADMIN_SERVICE::getAllCourses);
-        deleteObject(PROFESSOR_SERVICE::deleteTask, randomTask, () -> PROFESSOR_SERVICE.getAllTasks(randomTask.getCourse()));
-        deleteObject(ADMIN_SERVICE::deleteAccount, randomProfessor, ADMIN_SERVICE::getAllProfessors);
-        deleteObject(ADMIN_SERVICE::deleteAccount, randomStudent, ADMIN_SERVICE::getAllStudents);
     }
 }
