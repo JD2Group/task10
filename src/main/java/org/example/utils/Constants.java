@@ -4,10 +4,7 @@ import java.util.Random;
 
 public final class Constants {
     public static final Random RANDOM = new Random();
-    public static final int INITIAL_NUMBER_OF_COURSES = 6;
-    public static final int INITIAL_NUMBER_OF_STUDENTS = 6;
-    public static final int INITIAL_NUMBER_OF_TASKS = 6;
-    public static final int INITIAL_NUMBER_OF_SOLUTIONS = 6;
+    public static final int LIST_SIZE = 6;
     public static final String RANDOM_TITLE = "Title No.%d";
     public static final String RANDOM_NAME = "Name No.%d";
     public static final String RANDOM_SURNAME = "Surname  No.%d";
