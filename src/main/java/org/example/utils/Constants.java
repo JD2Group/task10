@@ -3,6 +3,7 @@ package org.example.utils;
 import java.util.Random;
 
 public final class Constants {
+    public static final String STRING_N = "%n";
     public static final Random RANDOM = new Random();
     public static final int INITIAL_NUMBER_OF_COURSES = 6;
     public static final int INITIAL_NUMBER_OF_STUDENTS = 6;
