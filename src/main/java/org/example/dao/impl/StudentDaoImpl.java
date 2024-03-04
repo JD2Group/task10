@@ -10,6 +10,7 @@ import org.hibernate.exception.ConstraintViolationException;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,17 +40,25 @@ public class StudentDaoImpl extends DaoImpl<Student, Long> implements StudentDao
 
         if (!id.equals(StudentDao.DELETED_STUDENT_ID)) {
             Student student = super.read(id);
-            Student deleted = super.read(StudentDao.DELETED_STUDENT_ID);
+            //Student deleted = super.read(StudentDao.DELETED_STUDENT_ID);
             if (student != null) {
                 getEm().getTransaction().begin();
+
+                String JPQL = String.format("UPDATE solutions s SET s.student_id=%d WHERE s.student_id=%d", DELETED_STUDENT_ID, id);
+                Query query = getEm().createNativeQuery(JPQL);
+                query.executeUpdate();
+
+                /*
                 getEm().refresh(student);
                 student.getSolutions().stream()
                     .peek(solution -> solution.setStudent(deleted))
                     .forEach(getEm()::merge);
+                */
+
                 getEm().remove(student);
                 commitTransaction(DELETE_MESSAGE, DELETE_FAILED_MESSAGE, student);
             } else {
-                log.error(String.format(ENTITY_NOT_FOUND_MESSAGE,id));
+                log.error(String.format(ENTITY_NOT_FOUND_MESSAGE, id));
                 throw new EntityNotFoundException();
             }
         }
