@@ -40,21 +40,12 @@ public class StudentDaoImpl extends DaoImpl<Student, Long> implements StudentDao
 
         if (!id.equals(StudentDao.DELETED_STUDENT_ID)) {
             Student student = super.read(id);
-            //Student deleted = super.read(StudentDao.DELETED_STUDENT_ID);
+
             if (student != null) {
                 getEm().getTransaction().begin();
-
                 String JPQL = String.format("UPDATE solutions s SET s.student_id=%d WHERE s.student_id=%d", DELETED_STUDENT_ID, id);
                 Query query = getEm().createNativeQuery(JPQL);
                 query.executeUpdate();
-
-                /*
-                getEm().refresh(student);
-                student.getSolutions().stream()
-                    .peek(solution -> solution.setStudent(deleted))
-                    .forEach(getEm()::merge);
-                */
-
                 getEm().remove(student);
                 commitTransaction(DELETE_MESSAGE, DELETE_FAILED_MESSAGE, student);
             } else {

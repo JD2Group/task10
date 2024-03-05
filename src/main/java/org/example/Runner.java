@@ -145,9 +145,9 @@ public class Runner {
         List<Professor> professors = ADMIN_SERVICE.getAllProfessors();
         List<Student> students = ADMIN_SERVICE.getAllStudents();
         List<Course>  courses = ADMIN_SERVICE.getAllCourses();
-        System.out.printf((OBJECT_DELETED) + "%n", professor.toString(), !professors.contains(professor));
-        System.out.printf((OBJECT_DELETED) + "%n", student.toString(), !students.contains(student));
-        System.out.printf((OBJECT_DELETED) + "%n", course.toString(), !courses.contains(course));
+        System.out.printf((OBJECT_DELETED) + STRING_N, professor.toString(), !professors.contains(professor));
+        System.out.printf((OBJECT_DELETED) + STRING_N, student.toString(), !students.contains(student));
+        System.out.printf((OBJECT_DELETED) + STRING_N, course.toString(), !courses.contains(course));
         ADMIN_SERVICE.clearBaseFromSolutionsWithoutStudentIdAndTaskId();
     }
 
