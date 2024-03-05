@@ -16,7 +16,7 @@
         <properties>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
             <property name="javax.persistence.jdbc.url"
-                      value="jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true"/>
+                      value="jdbc:mysql://178.127.97.123:3306/test?createDatabaseIfNotExist=true"/>
             <property name="javax.persistence.jdbc.user" value="JD2User"/>
             <property name="javax.persistence.jdbc.password" value="973341"/>
             <property name="hibernate.dialect.storage_engine" value="innodb"/>
