@@ -8,19 +8,9 @@
         <createTable tableName="students_courses">
             <column name="student_id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
-                <!-- <constraints primaryKey="true"
-                              foreignKeyName="FKr16q8s9m6kr7xupi4fw9iqpgl"
-                              referencedTableName="students"
-                              referencedColumnNames="id"
-                              nullable="false"/>-->
             </column>
             <column name="course_id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
-                <!--<constraints primaryKey="true"
-                             foreignKeyName="FKcc42107lsifo5rjyjlhdu6i6u"
-                             referencedTableName="courses"
-                             referencedColumnNames="id"
-                             nullable="false"/>-->
             </column>
         </createTable>
         <rollback>

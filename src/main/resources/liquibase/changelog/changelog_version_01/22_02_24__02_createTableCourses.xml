@@ -13,10 +13,6 @@
             <column name="title" type="varchar(255)"/>
             <column name="professor_id" type="bigint">
                 <constraints nullable="true"/>
-                <!-- <constraints foreignKeyName="FKsj4okul9jc8m3p4tsnuobqjpb"
-                              referencedTableName="professors"
-                              referencedColumnNames="id"
-                              nullable="true"/>-->
             </column>
         </createTable>
         <rollback>
@@ -38,13 +34,11 @@
 
     <changeSet author="Timonov_Timon" id="03">
         <insert tableName="courses">
-<!--            <column name="id" value="1"/>-->
             <column name="title" value="This course has been deleted."/>
         </insert>
         <rollback>
             <delete tableName="courses">
                 <whereParams>
-<!--                    <param name="id" value="1"/>-->
                     <param name="title" value="This course has been deleted."/>
                 </whereParams>
             </delete>

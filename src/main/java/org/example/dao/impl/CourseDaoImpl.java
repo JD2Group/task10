@@ -28,23 +28,12 @@ public class CourseDaoImpl extends DaoImpl<Course, Long> implements CourseDao {
 
         if (DELETED_COURSE_ID != id) {
             Course course = super.read(id);
-            //Course deleted = super.read(DELETED_COURSE_ID);
             if (course != null) {
                 getEm().getTransaction().begin();
                 String JPQL = String.format("UPDATE tasks t SET t.course_id=%d WHERE t.course_id=%d", DELETED_COURSE_ID, id);
                 Query query = getEm().createNativeQuery(JPQL);
                 query.executeUpdate();
                 getEm().remove(course);
-
-                /*
-                getEm().refresh(course);
-                course.getTasks().stream()
-                    .peek(task -> task.setCourse(deleted))
-                    .forEach(getEm()::merge);
-                getEm().flush();
-                getEm().remove(course);
-                */
-
                 commitTransaction(DELETE_MESSAGE, DELETE_FAILED_MESSAGE, course);
             } else {
                 log.error(String.format(ENTITY_NOT_FOUND_MESSAGE, id));

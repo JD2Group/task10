@@ -36,20 +36,11 @@ public class ProfessorDaoImpl extends DaoImpl<Professor, Long> implements Profes
 
         Professor professor = super.read(id);
         if (professor != null) {
-            //getEm().refresh(professor);
             getEm().getTransaction().begin();
 
             String JPQL = String.format("UPDATE courses c SET c.professor_id=%d WHERE c.professor_id=%d", null, id);
             Query query = getEm().createNativeQuery(JPQL);
             query.executeUpdate();
-
-            /*
-            professor.getCourses().stream()
-                .peek(course -> course.setProfessor(null))
-                .forEach(getEm()::merge);
-            getEm().flush();
-            */
-
             getEm().remove(professor);
             commitTransaction(DELETE_MESSAGE, DELETE_FAILED_MESSAGE, professor);
         } else {

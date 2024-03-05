@@ -15,18 +15,8 @@
             <column name="response" type="longtext"/>
             <column name="review" type="longtext"/>
             <column name="updatedDate" type="datetime(6)"/>
-            <column name="student_id" type="bigint">
-                <!--<constraints foreignKeyName="FK1pcfy9sr41qrjfjnryxw7ld1o"
-                             referencedTableName="students"
-                             referencedColumnNames="id"
-                             nullable="true"/>-->
-            </column>
-            <column name="task_id" type="bigint">
-                <!--<constraints foreignKeyName="FKbqabgk1lnu9xg0rbmno60q2tw"
-                             referencedTableName="tasks"
-                             referencedColumnNames="id"
-                             nullable="true"/>-->
-            </column>
+            <column name="student_id" type="bigint"/>
+            <column name="task_id" type="bigint"/>
         </createTable>
         <rollback>
             <dropTable tableName="solutions"/>

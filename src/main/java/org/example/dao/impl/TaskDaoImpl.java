@@ -28,28 +28,19 @@ public class TaskDaoImpl extends DaoImpl<Task, Long> implements TaskDao {
 
         if (DELETED_TASK_ID != id) {
             Task task = super.read(id);
-            //Task deleted = super.read(DELETED_TASK_ID);
             if (task != null) {
                 getEm().getTransaction().begin();
 
                 String JPQL = String.format("UPDATE solutions s SET s.task_id=%d WHERE s.task_id=%d", DELETED_TASK_ID, id);
                 Query query = getEm().createNativeQuery(JPQL);
                 query.executeUpdate();
-
-                /*
-                getEm().refresh(task);
-                task.getSolutions().stream()
-                    .peek(solution -> solution.setTask(deleted))
-                    .forEach(getEm()::merge);
-                */
-
                 getEm().remove(task);
                 try {
                     getEm().getTransaction().commit();
                     log.info(String.format(DELETE_MESSAGE, task.toString()));
                 } catch (Exception e) {
                     getEm().getTransaction().rollback();
-                    log.error(String.format(DELETE_FAILED_MESSAGE, task.toString(), e.getCause()));
+                    log.error(String.format(DELETE_FAILED_MESSAGE,  e.getCause()));
                 }
             } else {
                 log.error(String.format(ENTITY_NOT_FOUND_MESSAGE, id));
