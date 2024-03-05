@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet author="Timonov_Timon" id="01">
+        <createTable tableName="solutions">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="createdDate" type="datetime(6)"/>
+            <column name="mark" type="int"/>
+            <column name="readyForReview" type="bit"/>
+            <column name="response" type="longtext"/>
+            <column name="review" type="longtext"/>
+            <column name="updatedDate" type="datetime(6)"/>
+            <column name="student_id" type="bigint">
+                <!--<constraints foreignKeyName="FK1pcfy9sr41qrjfjnryxw7ld1o"
+                             referencedTableName="students"
+                             referencedColumnNames="id"
+                             nullable="true"/>-->
+            </column>
+            <column name="task_id" type="bigint">
+                <!--<constraints foreignKeyName="FKbqabgk1lnu9xg0rbmno60q2tw"
+                             referencedTableName="tasks"
+                             referencedColumnNames="id"
+                             nullable="true"/>-->
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="solutions"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="Timonov_Timon" id="02">
+        <addForeignKeyConstraint
+                baseTableName="solutions"
+                baseColumnNames="student_id"
+                constraintName="FK1pcfy9sr41qrjfjnryxw7ld1o"
+                referencedTableName="students"
+                referencedColumnNames="id"/>
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="FK1pcfy9sr41qrjfjnryxw7ld1o"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="Timonov_Timon" id="03">
+        <addForeignKeyConstraint
+                baseTableName="solutions"
+                baseColumnNames="task_id"
+                constraintName="FKbqabgk1lnu9xg0rbmno60q2tw"
+                referencedTableName="tasks"
+                referencedColumnNames="id"/>
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="FKbqabgk1lnu9xg0rbmno60q2tw"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
+
+
+        <!--create table solutions
+        (
+            id             bigint auto_increment
+                primary key,
+            createdDate    datetime(6) null,
+            mark           int         null,
+            readyForReview bit         null,
+            response       longtext    null,
+            review         longtext    null,
+            updatedDate    datetime(6) null,
+            student_id     bigint      null,
+            task_id        bigint      null,
+            constraint FK1pcfy9sr41qrjfjnryxw7ld1o
+                foreign key (student_id) references students (id),
+            constraint FKbqabgk1lnu9xg0rbmno60q2tw
+                foreign key (task_id) references tasks (id)
+        );-->
